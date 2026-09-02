@@ -275,7 +275,8 @@ button.reset:hover{border-color:var(--bad);color:var(--txt)}
 <header><h1>Kart telemetry coaching</h1>
 <div class="sub">A phone in a pocket and AirPods in a helmet, turned into a debrief a driver can use.</div></header>
 <main>
-<h2>What this will do</h2>
+<div id="results"></div>
+<h2>What this does</h2>
 <p>The inbox holds one Sensor Logger recording from a rental-kart session at Gateway Kartplex: 100&nbsp;Hz accelerometer and gyroscope, 1&nbsp;Hz GPS, in-helmet audio and head motion, plus the venue's printed timing sheet for each stint. Pressing the button runs the whole pipeline on it, about a minute, and every step validates itself against the timing sheet.</p>
 <div class="grid">
 <div class="card"><h3>Stage A: recording to dataset</h3><ol>__STAGE_A__</ol></div>
@@ -292,7 +293,6 @@ button.reset:hover{border-color:var(--bad);color:var(--txt)}
 <div class="card"><table><tr><th>Date</th><th>Time</th><th>Session</th><th>Driver</th><th>Laps</th><th>Best (sheet)</th></tr>__INBOX__</table></div>
 <button id="go">Begin analysis</button><button id="reset" class="reset" title="Delete the generated dataset and dashboards so you can run from scratch">Reset</button><span class="status" id="status"></span>
 <div id="log"></div>
-<div id="results"></div>
 </main>
 <script>
 const go=document.getElementById('go'),reset=document.getElementById('reset'),log=document.getElementById('log'),
@@ -306,12 +306,13 @@ function append(lines){for(const l of lines){const d=document.createElement('div
   log.scrollTop=log.scrollHeight}
 function fmt(t){return t==null?'-':t.toFixed(3)+'s'}
 function renderSessions(list){if(!list.length){results.innerHTML='';return}
-  let h='<h2>Sessions</h2><div class="sessions">';
+  let h='<h2 style="margin-top:10px">Sessions <a href="#" id="reset2" style="float:right;font-size:13px;font-weight:400;color:var(--dim);text-decoration:none">Reset</a></h2><div class="sessions">';
   for(const s of list){h+=`<div class="card sess"><div class="top"><span class="event">${esc(s.event)}</span><span class="when">${esc(s.when)} · ${s.laps||'-'} laps · best ${fmt(s.best)}</span></div>
     <div class="head">${esc(s.headline)}</div><div class="opp">${esc(s.opportunity)}</div>
     <ul>${s.strategy.map(x=>'<li>'+esc(x)+'</li>').join('')}</ul>
     <div class="btns"><a class="primary" href="${s.render}/landing.html">Open session</a>__DASH_LINKS__</div></div>`}
-  results.innerHTML=h+'</div>'}
+  results.innerHTML=h+'</div>';
+  const r2=document.getElementById('reset2');if(r2)r2.onclick=e=>{e.preventDefault();reset.click()}}
 async function poll(){const r=await fetch('/api/status?offset='+offset);const j=await r.json();
   append(j.lines);offset=j.offset;
   if(j.state==='running'){status.textContent='Running…';go.disabled=true;reset.style.display='none'}

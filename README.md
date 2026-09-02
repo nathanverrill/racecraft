@@ -29,8 +29,8 @@ Then open <http://localhost:8800>. The home page explains what the pipeline will
 and lists the sessions waiting in the inbox. Press **Begin analysis** and the
 pipeline output streams into the page, about a minute. When it finishes you land on
 the first session's coaching debrief. **View All Sessions** in its header returns to
-the home page, where each session is a card with its headline, biggest opportunity
-and top three corners to work on, plus links into the other dashboards: onboard
+the home page, where each session is a card at the top with its headline, biggest
+opportunity and top three corners to work on, plus links into the other dashboards: onboard
 replay, ghost lap against your theoretical best, cockpit view and sector 1 breakdown.
 **Reset** deletes the generated output and returns the page to its starting state.
 
