@@ -27,11 +27,12 @@ docker run --rm -p 8800:8800 ghcr.io/nathanverrill/racecraft
 
 Then open <http://localhost:8800>. The home page explains what the pipeline will do
 and lists the sessions waiting in the inbox. Press **Begin analysis** and the
-pipeline output streams into the page, about a minute. When it finishes, each session
-appears as a card with its headline, biggest opportunity and top three corners to work
-on, with links into the dashboards: onboard replay, coaching debrief, ghost lap against
-your theoretical best, cockpit view and sector 1 breakdown. **Reset** deletes the
-generated output and returns the page to its starting state.
+pipeline output streams into the page, about a minute. When it finishes you land on
+the first session's coaching debrief. **View All Sessions** in its header returns to
+the home page, where each session is a card with its headline, biggest opportunity
+and top three corners to work on, plus links into the other dashboards: onboard
+replay, ghost lap against your theoretical best, cockpit view and sector 1 breakdown.
+**Reset** deletes the generated output and returns the page to its starting state.
 
 ![Sector 1 study](telemetry/ingestion/kart/assets/kart-sector-1.png)
 

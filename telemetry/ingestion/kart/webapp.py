@@ -297,7 +297,7 @@ button.reset:hover{border-color:var(--bad);color:var(--txt)}
 <script>
 const go=document.getElementById('go'),reset=document.getElementById('reset'),log=document.getElementById('log'),
       status=document.getElementById('status'),results=document.getElementById('results');
-let offset=0,timer=null;
+let offset=0,timer=null,seenDone=false;
 function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
 function cls(l){if(l.startsWith('###'))return 'h';if(l.startsWith('!!!'))return 'bad';
   if(/STATUS: PASS|PASS$/.test(l))return 'ok';if(/FAIL|Traceback|Error/.test(l))return 'bad';return ''}
@@ -320,12 +320,14 @@ async function poll(){const r=await fetch('/api/status?offset='+offset);const j=
     go.textContent=j.sessions.length?'Run analysis again':'Begin analysis';
     reset.style.display=j.sessions.length?'inline-block':'none';
     renderSessions(j.sessions);
-    if(j.state==='done')results.scrollIntoView({behavior:'smooth'})}}
+    if(j.state==='done'&&j.sessions.length&&!seenDone){seenDone=true;
+      status.textContent='Complete. Opening the debrief…';
+      location.href=j.sessions[0].render+'/coaching.html'}}}
 reset.onclick=async()=>{reset.disabled=true;const r=await fetch('/api/reset',{method:'POST'});const j=await r.json();
   if(j.reset){location.href='/'}else{reset.disabled=false;status.textContent='Cannot reset while running'}};
-go.onclick=async()=>{go.disabled=true;log.style.display='block';log.innerHTML='';offset=0;results.innerHTML='';
+go.onclick=async()=>{seenDone=false;go.disabled=true;log.style.display='block';log.innerHTML='';offset=0;results.innerHTML='';
   await fetch('/api/run',{method:'POST'});timer=setInterval(poll,700);poll()};
-poll();
+seenDone=true;poll();
 </script></body></html>"""
 
 
