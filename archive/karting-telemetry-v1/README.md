@@ -1,10 +1,13 @@
-# telemetry-v1
+# karting-telemetry-v1 (archived)
+
+> **Archived.** Superseded by `telemetry/`. Not maintained; paths point at
+> recordings on disk.
 
 The first karting pipeline, kept because `telemetry/` was rebuilt *from* it and its
 plan document ("don't re-litigate these without reason") cites decisions made here.
 
 Everything is code only; the recordings it ran against are on disk (see
-[`../docs/DATA.md`](../docs/DATA.md)).
+[`../../docs/DATA.md`](../../docs/DATA.md)).
 
 ## What was settled here
 

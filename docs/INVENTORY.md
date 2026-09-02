@@ -9,7 +9,7 @@ directory is traceable.
 | here | from | note |
 |---|---|---|
 | `telemetry/` | `karting-repos/karting` (github.com/nathanverrill/karting) | merged via `git subtree`; all 33 commits preserved |
-| `telemetry-v1/` | `.../World_Wide_Technology_Raceway-2026-06-25_21-02-36/` | code only — `visit_6/kart/`, root scripts, `claude/` and `gemini/` build comparison |
+| `archive/karting-telemetry-v1/` | `.../World_Wide_Technology_Raceway-2026-06-25_21-02-36/` | code only — `visit_6/kart/`, root scripts, `claude/` and `gemini/` build comparison |
 | `vision/spec/` | `karting` repo at `f042c88^` | the vision-first plan and build prompt, recovered from before vision was removed |
 | `vision/recovered-artifacts/` | same commit | `venue_landmarks.geojson`, `satellite_ref.json` — geometry digitized from satellite imagery |
 | `archive/f1-hybrid-search/` | `f1-ai/` | code and notebooks only; the 94 MB PDF corpus stayed on disk |

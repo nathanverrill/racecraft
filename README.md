@@ -18,9 +18,8 @@ Exploratory work on racing telemetry, analysis and AI tooling. Two subjects:
 | Directory | Contents |
 |---|---|
 | [`telemetry/`](telemetry/) | Current karting pipeline. Sensor Logger ZIP in, per-session dataset and HTML/MP4 dashboards out. |
-| [`telemetry-v1/`](telemetry-v1/) | Earlier version of the karting pipeline, plus diagnostic probes and a Claude-vs-Gemini dashboard build comparison. |
 | [`vision/`](vision/) | Spec and recovered artifacts for reading timing sheets and track maps from photographs. Not part of the current pipeline. |
-| [`archive/`](archive/) | Older experiments kept for reference, not maintained. Currently `f1-hybrid-search`, a retrieval prototype over F1 results. |
+| [`archive/`](archive/) | Older experiments kept for reference, not maintained. `karting-telemetry-v1`, the superseded pipeline, and `f1-hybrid-search`, a retrieval prototype over F1 results. |
 | [`notebooks/`](notebooks/) | Jupyter notebooks: karting at Gateway, COTA and Boschertown; FastF1 for Formula 1. |
 | [`narrative/`](narrative/) | Scrapers and a small corpus of race reports and transcripts for generating race commentary. |
 | [`docs/`](docs/) | Where the raw data lives on disk and how the repo is organised. |
@@ -83,15 +82,6 @@ Stage A needs a raw recording ZIP plus its timing-sheet JSON in
 [`docs/DATA.md`](docs/DATA.md). Video export additionally needs Playwright with
 Chromium and ffmpeg.
 
-## telemetry-v1
-
-Earlier pipeline the current one was rebuilt from. Code only. Contains the GPS
-spline fusion, gyro-based yaw, distance-aligned lap deltas, and the diagnostic
-scripts (`diag_*.py`, `probe_*.py`) used to locate the start/finish gate, spins,
-pit entry and impacts. `model-comparison/` holds dashboards built from the same
-session by Claude and Gemini. `audio-vs-gps-validation-prompt.md` describes the
-RPM-vs-speed regression used to check audio-derived RPM.
-
 ## vision
 
 A design for reading timing sheets, hand-drawn track maps and satellite screenshots
@@ -106,6 +96,13 @@ end to end. `IMAGE_CORPUS.md` catalogues the photographs on disk.
 Experiments that are not maintained and do not run as checked in. Kept for the
 ideas in them.
 
+- `karting-telemetry-v1/` The pipeline `telemetry/` was rebuilt from. Code only,
+  with hardcoded paths to recordings on disk. Contains the GPS spline fusion,
+  gyro-based yaw, distance-aligned lap deltas, and the diagnostic scripts
+  (`diag_*.py`, `probe_*.py`) used to locate the start/finish gate, spins, pit
+  entry and impacts. `model-comparison/` holds dashboards built from the same
+  session by Claude and Gemini. `audio-vs-gps-validation-prompt.md` describes the
+  RPM-vs-speed regression used to check audio-derived RPM.
 - `f1-hybrid-search/` Hybrid BM25 + dense-vector retrieval over the 1950 to 2020 F1
   results database using OpenSearch and Gemini, with a RAG chat loop. The index
   build lives in the notebooks. The standalone `chat.py` queries an embedding
