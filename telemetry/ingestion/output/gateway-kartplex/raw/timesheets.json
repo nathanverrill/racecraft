@@ -1,0 +1,617 @@
+{
+  "sheets": [
+    {
+      "source_json": "2026-06-25_1440.json",
+      "schema": "flat",
+      "session_key": "2026-06-25_14-40",
+      "datetime_local": "2026-06-25T14:40:00",
+      "date": "2026-06-25",
+      "time": "14:40",
+      "time_raw": "14:40",
+      "venue": "Kartplex T1",
+      "configuration": null,
+      "session_type": "10-minute A&D",
+      "event": "10-minute A&D",
+      "driver": "Nathan Verrill",
+      "kart_number": null,
+      "position": 1,
+      "field_size": 55340,
+      "lap_times": [
+        42.45,
+        41.136,
+        49.209,
+        41.834,
+        41.564,
+        42.189,
+        41.056,
+        40.968,
+        42.535,
+        42.583,
+        40.519,
+        53.899,
+        41.6,
+        46.75
+      ],
+      "best_lap": 40.519,
+      "avg_lap": 43.449,
+      "avg_lap_basis": "mean of all laps",
+      "ranking_metric": "best",
+      "total_laps": 14,
+      "scheduled_laps": null,
+      "consistency": {
+        "n": 14,
+        "mean": 43.449,
+        "std": 3.852,
+        "cv": 0.0886
+      },
+      "proSkill": 1217,
+      "proSkillRank": 18406,
+      "proSkillPercentage": 66.74,
+      "totalRacers": 55340,
+      "racerSince": "2025-10-02",
+      "visitNumber_UNRELIABLE": 6,
+      "raceNumber_UNRELIABLE": 14,
+      "leaderboards": {
+        "topProSkillOverall": [
+          {
+            "rank": 1,
+            "driver": "@Wracing26",
+            "proSkill": 4781
+          },
+          {
+            "rank": 2,
+            "driver": "AJ_Roost21",
+            "proSkill": 4283
+          },
+          {
+            "rank": 3,
+            "driver": "Le Master",
+            "proSkill": 4179
+          },
+          {
+            "rank": 4,
+            "driver": "jimmy",
+            "proSkill": 4174
+          },
+          {
+            "rank": 5,
+            "driver": "Eggy",
+            "proSkill": 4153
+          }
+        ],
+        "bestOfTheWeek": [
+          {
+            "rank": 1,
+            "driver": "Luke Wieneke",
+            "time": 38.072
+          },
+          {
+            "rank": 2,
+            "driver": "Lucky Liam",
+            "time": 38.277
+          },
+          {
+            "rank": 3,
+            "driver": "Jackson Leeman",
+            "time": 38.401
+          },
+          {
+            "rank": 4,
+            "driver": "Aiden Sonnenberg",
+            "time": 38.478
+          },
+          {
+            "rank": 5,
+            "driver": "Sohum Tokekar",
+            "time": 38.506
+          }
+        ]
+      },
+      "_raw": {
+        "driver": "Nathan Verrill",
+        "date": "2026-06-25",
+        "time": "14:40",
+        "event": "10-minute A&D",
+        "track": "Kartplex T1",
+        "position": 1,
+        "proSkill": 1217,
+        "proSkillRank": 18406,
+        "totalRacers": 55340,
+        "proSkillPercentage": 66.74,
+        "racerSince": "2025-10-02",
+        "visitNumber": 6,
+        "raceNumber": 14,
+        "lapTimes": [
+          {
+            "lap": 1,
+            "time": 42.45
+          },
+          {
+            "lap": 2,
+            "time": 41.136
+          },
+          {
+            "lap": 3,
+            "time": 49.209
+          },
+          {
+            "lap": 4,
+            "time": 41.834
+          },
+          {
+            "lap": 5,
+            "time": 41.564
+          },
+          {
+            "lap": 6,
+            "time": 42.189
+          },
+          {
+            "lap": 7,
+            "time": 41.056
+          },
+          {
+            "lap": 8,
+            "time": 40.968
+          },
+          {
+            "lap": 9,
+            "time": 42.535
+          },
+          {
+            "lap": 10,
+            "time": 42.583
+          },
+          {
+            "lap": 11,
+            "time": 40.519
+          },
+          {
+            "lap": 12,
+            "time": 53.899
+          },
+          {
+            "lap": 13,
+            "time": 41.6
+          },
+          {
+            "lap": 14,
+            "time": 46.75
+          }
+        ],
+        "bestLap": 40.519,
+        "totalLaps": 14,
+        "leaderboards": {
+          "topProSkillOverall": [
+            {
+              "rank": 1,
+              "driver": "@Wracing26",
+              "proSkill": 4781
+            },
+            {
+              "rank": 2,
+              "driver": "AJ_Roost21",
+              "proSkill": 4283
+            },
+            {
+              "rank": 3,
+              "driver": "Le Master",
+              "proSkill": 4179
+            },
+            {
+              "rank": 4,
+              "driver": "jimmy",
+              "proSkill": 4174
+            },
+            {
+              "rank": 5,
+              "driver": "Eggy",
+              "proSkill": 4153
+            }
+          ],
+          "bestOfTheWeek": [
+            {
+              "rank": 1,
+              "driver": "Luke Wieneke",
+              "time": 38.072
+            },
+            {
+              "rank": 2,
+              "driver": "Lucky Liam",
+              "time": 38.277
+            },
+            {
+              "rank": 3,
+              "driver": "Jackson Leeman",
+              "time": 38.401
+            },
+            {
+              "rank": 4,
+              "driver": "Aiden Sonnenberg",
+              "time": 38.478
+            },
+            {
+              "rank": 5,
+              "driver": "Sohum Tokekar",
+              "time": 38.506
+            }
+          ]
+        }
+      }
+    },
+    {
+      "source_json": "2026-06-25_1500.json",
+      "schema": "flat",
+      "session_key": "2026-06-25_15-00",
+      "datetime_local": "2026-06-25T15:00:00",
+      "date": "2026-06-25",
+      "time": "15:00",
+      "time_raw": "15:00",
+      "venue": "Kartplex T1",
+      "configuration": null,
+      "session_type": "10 min A&D",
+      "event": "10 min A&D",
+      "driver": "Nathan Verrill",
+      "kart_number": null,
+      "position": 1,
+      "field_size": 55340,
+      "lap_times": [
+        42.137,
+        49.038,
+        42.323,
+        42.243,
+        41.24,
+        50.536,
+        42.228,
+        41.164,
+        41.195,
+        41.7,
+        41.884,
+        42.035,
+        41.632
+      ],
+      "best_lap": 41.164,
+      "avg_lap": 43.027,
+      "avg_lap_basis": "mean of all laps",
+      "ranking_metric": "best",
+      "total_laps": 13,
+      "scheduled_laps": null,
+      "consistency": {
+        "n": 13,
+        "mean": 43.027,
+        "std": 3.042,
+        "cv": 0.0707
+      },
+      "proSkill": 1222,
+      "proSkillRank": 17600,
+      "proSkillPercentage": 68.2,
+      "totalRacers": 55340,
+      "racerSince": "2025-10-02",
+      "visitNumber_UNRELIABLE": 6,
+      "raceNumber_UNRELIABLE": 15,
+      "leaderboards": {
+        "topProSkillOverall": [
+          {
+            "rank": 1,
+            "driver": "@JWracng26",
+            "proSkill": 4781
+          },
+          {
+            "rank": 2,
+            "driver": "AJ_Roost21",
+            "proSkill": 4283
+          },
+          {
+            "rank": 3,
+            "driver": "Le Master",
+            "proSkill": 4179
+          },
+          {
+            "rank": 4,
+            "driver": "jimmy",
+            "proSkill": 4174
+          },
+          {
+            "rank": 5,
+            "driver": "Eggy",
+            "proSkill": 4153
+          },
+          {
+            "rank": 6,
+            "driver": "(Evan Stamer) Bri...",
+            "proSkill": 4023
+          },
+          {
+            "rank": 7,
+            "driver": "Elijah Ward NASCA...",
+            "proSkill": 3903
+          },
+          {
+            "rank": 8,
+            "driver": "(Rockwell)Starlin...",
+            "proSkill": 3902
+          },
+          {
+            "rank": 9,
+            "driver": "Tom",
+            "proSkill": 3836
+          },
+          {
+            "rank": 10,
+            "driver": "Taylor Bowman",
+            "proSkill": 3830
+          },
+          {
+            "rank": 11,
+            "driver": "Patrick Fuchs",
+            "proSkill": 3783
+          },
+          {
+            "rank": 12,
+            "driver": "M-Shazam",
+            "proSkill": 3728
+          }
+        ],
+        "bestOfTheWeek": [
+          {
+            "rank": 1,
+            "driver": "Luke Wieneke",
+            "time": 38.072
+          },
+          {
+            "rank": 2,
+            "driver": "Lucky Liam",
+            "time": 38.277
+          },
+          {
+            "rank": 3,
+            "driver": "Jackson Leeman",
+            "time": 38.401
+          },
+          {
+            "rank": 4,
+            "driver": "Aiden Sonnenberg",
+            "time": 38.478
+          },
+          {
+            "rank": 5,
+            "driver": "(Sohum Tokekar) ...",
+            "time": 38.506
+          },
+          {
+            "rank": 6,
+            "driver": "kenny h",
+            "time": 38.58
+          },
+          {
+            "rank": 7,
+            "driver": "Pryor McKay",
+            "time": 38.606
+          },
+          {
+            "rank": 8,
+            "driver": "Jackson Evans",
+            "time": 38.705
+          },
+          {
+            "rank": 9,
+            "driver": "Gavin",
+            "time": 38.754
+          },
+          {
+            "rank": 10,
+            "driver": "Jase Smith",
+            "time": 38.777
+          },
+          {
+            "rank": 11,
+            "driver": "coop",
+            "time": 38.815
+          },
+          {
+            "rank": 12,
+            "driver": "Jayden",
+            "time": 38.965
+          }
+        ]
+      },
+      "_raw": {
+        "driver": "Nathan Verrill",
+        "date": "2026-06-25",
+        "time": "15:00",
+        "event": "10 min A&D",
+        "track": "Kartplex T1",
+        "position": 1,
+        "proSkill": 1222,
+        "proSkillRank": 17600,
+        "totalRacers": 55340,
+        "proSkillPercentage": 68.2,
+        "racerSince": "2025-10-02",
+        "visitNumber": 6,
+        "raceNumber": 15,
+        "lapTimes": [
+          {
+            "lap": 1,
+            "time": 42.137
+          },
+          {
+            "lap": 2,
+            "time": 49.038
+          },
+          {
+            "lap": 3,
+            "time": 42.323
+          },
+          {
+            "lap": 4,
+            "time": 42.243
+          },
+          {
+            "lap": 5,
+            "time": 41.24
+          },
+          {
+            "lap": 6,
+            "time": 50.536
+          },
+          {
+            "lap": 7,
+            "time": 42.228
+          },
+          {
+            "lap": 8,
+            "time": 41.164
+          },
+          {
+            "lap": 9,
+            "time": 41.195
+          },
+          {
+            "lap": 10,
+            "time": 41.7
+          },
+          {
+            "lap": 11,
+            "time": 41.884
+          },
+          {
+            "lap": 12,
+            "time": 42.035
+          },
+          {
+            "lap": 13,
+            "time": 41.632
+          }
+        ],
+        "bestLap": 41.164,
+        "totalLaps": 13,
+        "leaderboards": {
+          "topProSkillOverall": [
+            {
+              "rank": 1,
+              "driver": "@JWracng26",
+              "proSkill": 4781
+            },
+            {
+              "rank": 2,
+              "driver": "AJ_Roost21",
+              "proSkill": 4283
+            },
+            {
+              "rank": 3,
+              "driver": "Le Master",
+              "proSkill": 4179
+            },
+            {
+              "rank": 4,
+              "driver": "jimmy",
+              "proSkill": 4174
+            },
+            {
+              "rank": 5,
+              "driver": "Eggy",
+              "proSkill": 4153
+            },
+            {
+              "rank": 6,
+              "driver": "(Evan Stamer) Bri...",
+              "proSkill": 4023
+            },
+            {
+              "rank": 7,
+              "driver": "Elijah Ward NASCA...",
+              "proSkill": 3903
+            },
+            {
+              "rank": 8,
+              "driver": "(Rockwell)Starlin...",
+              "proSkill": 3902
+            },
+            {
+              "rank": 9,
+              "driver": "Tom",
+              "proSkill": 3836
+            },
+            {
+              "rank": 10,
+              "driver": "Taylor Bowman",
+              "proSkill": 3830
+            },
+            {
+              "rank": 11,
+              "driver": "Patrick Fuchs",
+              "proSkill": 3783
+            },
+            {
+              "rank": 12,
+              "driver": "M-Shazam",
+              "proSkill": 3728
+            }
+          ],
+          "bestOfTheWeek": [
+            {
+              "rank": 1,
+              "driver": "Luke Wieneke",
+              "time": 38.072
+            },
+            {
+              "rank": 2,
+              "driver": "Lucky Liam",
+              "time": 38.277
+            },
+            {
+              "rank": 3,
+              "driver": "Jackson Leeman",
+              "time": 38.401
+            },
+            {
+              "rank": 4,
+              "driver": "Aiden Sonnenberg",
+              "time": 38.478
+            },
+            {
+              "rank": 5,
+              "driver": "(Sohum Tokekar) ...",
+              "time": 38.506
+            },
+            {
+              "rank": 6,
+              "driver": "kenny h",
+              "time": 38.58
+            },
+            {
+              "rank": 7,
+              "driver": "Pryor McKay",
+              "time": 38.606
+            },
+            {
+              "rank": 8,
+              "driver": "Jackson Evans",
+              "time": 38.705
+            },
+            {
+              "rank": 9,
+              "driver": "Gavin",
+              "time": 38.754
+            },
+            {
+              "rank": 10,
+              "driver": "Jase Smith",
+              "time": 38.777
+            },
+            {
+              "rank": 11,
+              "driver": "coop",
+              "time": 38.815
+            },
+            {
+              "rank": 12,
+              "driver": "Jayden",
+              "time": 38.965
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

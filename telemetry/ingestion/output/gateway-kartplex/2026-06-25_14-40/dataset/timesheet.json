@@ -1,0 +1,224 @@
+{
+  "source_json": "2026-06-25_1440.json",
+  "session_key": "2026-06-25_14-40",
+  "datetime_local": "2026-06-25T14:40:00",
+  "date": "2026-06-25",
+  "time": "14:40",
+  "venue": "Kartplex T1",
+  "event": "10-minute A&D",
+  "driver": "Nathan Verrill",
+  "kart_number": null,
+  "position": 1,
+  "lap_times": [
+    42.45,
+    41.136,
+    49.209,
+    41.834,
+    41.564,
+    42.189,
+    41.056,
+    40.968,
+    42.535,
+    42.583,
+    40.519,
+    53.899,
+    41.6,
+    46.75
+  ],
+  "best_lap": 40.519,
+  "total_laps": 14,
+  "proSkill": 1217,
+  "proSkillRank": 18406,
+  "proSkillPercentage": 66.74,
+  "totalRacers": 55340,
+  "racerSince": "2025-10-02",
+  "visitNumber_UNRELIABLE": 6,
+  "raceNumber_UNRELIABLE": 14,
+  "leaderboards": {
+    "topProSkillOverall": [
+      {
+        "rank": 1,
+        "driver": "@Wracing26",
+        "proSkill": 4781
+      },
+      {
+        "rank": 2,
+        "driver": "AJ_Roost21",
+        "proSkill": 4283
+      },
+      {
+        "rank": 3,
+        "driver": "Le Master",
+        "proSkill": 4179
+      },
+      {
+        "rank": 4,
+        "driver": "jimmy",
+        "proSkill": 4174
+      },
+      {
+        "rank": 5,
+        "driver": "Eggy",
+        "proSkill": 4153
+      }
+    ],
+    "bestOfTheWeek": [
+      {
+        "rank": 1,
+        "driver": "Luke Wieneke",
+        "time": 38.072
+      },
+      {
+        "rank": 2,
+        "driver": "Lucky Liam",
+        "time": 38.277
+      },
+      {
+        "rank": 3,
+        "driver": "Jackson Leeman",
+        "time": 38.401
+      },
+      {
+        "rank": 4,
+        "driver": "Aiden Sonnenberg",
+        "time": 38.478
+      },
+      {
+        "rank": 5,
+        "driver": "Sohum Tokekar",
+        "time": 38.506
+      }
+    ]
+  },
+  "_raw": {
+    "driver": "Nathan Verrill",
+    "date": "2026-06-25",
+    "time": "14:40",
+    "event": "10-minute A&D",
+    "track": "Kartplex T1",
+    "position": 1,
+    "proSkill": 1217,
+    "proSkillRank": 18406,
+    "totalRacers": 55340,
+    "proSkillPercentage": 66.74,
+    "racerSince": "2025-10-02",
+    "visitNumber": 6,
+    "raceNumber": 14,
+    "lapTimes": [
+      {
+        "lap": 1,
+        "time": 42.45
+      },
+      {
+        "lap": 2,
+        "time": 41.136
+      },
+      {
+        "lap": 3,
+        "time": 49.209
+      },
+      {
+        "lap": 4,
+        "time": 41.834
+      },
+      {
+        "lap": 5,
+        "time": 41.564
+      },
+      {
+        "lap": 6,
+        "time": 42.189
+      },
+      {
+        "lap": 7,
+        "time": 41.056
+      },
+      {
+        "lap": 8,
+        "time": 40.968
+      },
+      {
+        "lap": 9,
+        "time": 42.535
+      },
+      {
+        "lap": 10,
+        "time": 42.583
+      },
+      {
+        "lap": 11,
+        "time": 40.519
+      },
+      {
+        "lap": 12,
+        "time": 53.899
+      },
+      {
+        "lap": 13,
+        "time": 41.6
+      },
+      {
+        "lap": 14,
+        "time": 46.75
+      }
+    ],
+    "bestLap": 40.519,
+    "totalLaps": 14,
+    "leaderboards": {
+      "topProSkillOverall": [
+        {
+          "rank": 1,
+          "driver": "@Wracing26",
+          "proSkill": 4781
+        },
+        {
+          "rank": 2,
+          "driver": "AJ_Roost21",
+          "proSkill": 4283
+        },
+        {
+          "rank": 3,
+          "driver": "Le Master",
+          "proSkill": 4179
+        },
+        {
+          "rank": 4,
+          "driver": "jimmy",
+          "proSkill": 4174
+        },
+        {
+          "rank": 5,
+          "driver": "Eggy",
+          "proSkill": 4153
+        }
+      ],
+      "bestOfTheWeek": [
+        {
+          "rank": 1,
+          "driver": "Luke Wieneke",
+          "time": 38.072
+        },
+        {
+          "rank": 2,
+          "driver": "Lucky Liam",
+          "time": 38.277
+        },
+        {
+          "rank": 3,
+          "driver": "Jackson Leeman",
+          "time": 38.401
+        },
+        {
+          "rank": 4,
+          "driver": "Aiden Sonnenberg",
+          "time": 38.478
+        },
+        {
+          "rank": 5,
+          "driver": "Sohum Tokekar",
+          "time": 38.506
+        }
+      ]
+    }
+  }
+}

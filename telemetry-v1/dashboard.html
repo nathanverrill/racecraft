@@ -1,0 +1,214 @@
+<!doctype html>
+<html>
+  <head>
+    <title>🏎️ F1 Sensor Fusion Telemetry Center</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+      body {
+        background: #0d1117;
+        color: #f0f6fc;
+        font-family: sans-serif;
+        padding: 20px;
+        margin: 0;
+      }
+      .panel {
+        background: #161b22;
+        border: 1px solid #30363d;
+        padding: 15px;
+        border-radius: 6px;
+        margin-bottom: 15px;
+      }
+      .hud-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 15px;
+      }
+      .hud-box {
+        background: #161b22;
+        border: 1px solid #1f6feb;
+        padding: 15px;
+        border-radius: 6px;
+        text-align: center;
+      }
+      .hud-label {
+        font-size: 11px;
+        color: #8b949e;
+        text-transform: uppercase;
+      }
+      .hud-value {
+        font-size: 26px;
+        font-weight: bold;
+        font-family: monospace;
+        color: #00fff0;
+        margin-top: 5px;
+      }
+      .main-layout {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 15px;
+      }
+      audio {
+        width: 100%;
+      }
+      input[type="range"] {
+        width: 100%;
+      }
+      .accel-active {
+        color: #00ff66 !important;
+        text-shadow: 0 0 10px rgba(0, 255, 102, 0.5);
+      }
+    </style>
+  </head>
+  <body>
+    <h2>🏎️ F1 Sensor Fusion Command Station</h2>
+
+    <div class="panel">
+      <audio id="audio" src="Microphone.mp4" controls></audio>
+      <div
+        style="
+          margin-top: 10px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        "
+      >
+        <label style="font-size: 13px"
+          >⏱️ Timeline Alignment Calibration:
+          <span id="offset-val" style="color: #00fff0; font-weight: bold"
+            >0.0</span
+          >s</label
+        >
+        <input
+          type="range"
+          id="offset"
+          min="-15"
+          max="15"
+          step="0.1"
+          value="0"
+          style="width: 75%"
+        />
+      </div>
+    </div>
+
+    <div class="hud-grid">
+      <div class="hud-box">
+        <div class="hud-label">Fused GPS Speed</div>
+        <div id="hud-speed" class="hud-value">0.0 MPH</div>
+      </div>
+      <div class="hud-box">
+        <div class="hud-label">Chassis Yaw Rate</div>
+        <div id="hud-yaw" class="hud-value">0.00 rad/s</div>
+      </div>
+      <div class="hud-box">
+        <div class="hud-label">Magnetic Heading</div>
+        <div id="hud-look" class="hud-value">0°</div>
+      </div>
+      <div class="hud-box">
+        <div class="hud-label">G-G Dynamics State</div>
+        <div id="hud-accel" class="hud-value">COASTING</div>
+      </div>
+    </div>
+
+    <div class="main-layout">
+      <div class="panel" id="map-canvas"></div>
+      <div class="panel" id="g-circle-canvas"></div>
+    </div>
+
+    <script>
+      const audio = document.getElementById('audio');
+      const offsetSlider = document.getElementById('offset');
+      const offsetVal = document.getElementById('offset-val');
+
+      let telemetry = {};
+      let offset = 0;
+      let totalPoints = 0;
+      let maxTime = 0;
+
+      offsetSlider.addEventListener('input', (e) => {
+          offset = parseFloat(e.target.value);
+          offsetVal.innerText = (offset >= 0 ? "+" : "") + offset.toFixed(1);
+      });
+
+      // Fast Binary Search to map timestamp to the high-density array indexes
+      function findIndex(timeArray, targetTime) {
+          let low = 0, high = timeArray.length - 1;
+          while (low < high) {
+              let mid = (low + high) >> 1;
+              if (timeArray[mid] < targetTime) low = mid + 1;
+              else high = mid;
+          }
+          return low;
+      }
+
+      fetch('telemetry_data.json?v=' + Date.now())
+          .then(res => res.json())
+          .then(data => {
+              telemetry = data;
+              totalPoints = data._metadata.total_points;
+              maxTime = data._metadata.max_time;
+              initCharts();
+              setInterval(updateDashboardHUD, 50); # 20 Hz frame sync loop
+          });
+
+      function initCharts() {
+          const layout = { paper_bgcolor: '#161b22', plot_bgcolor: '#161b22', font: { color: '#fff' }, margin: {t:40, b:40, l:50, r:20}, template: 'plotly_dark' };
+
+          if (telemetry.Location) {
+              Plotly.newPlot('map-canvas', [
+                  { x: telemetry.Location.lon, y: telemetry.Location.lat, mode: 'lines', name: 'Fused Path', line: {color: '#1f6feb', width: 3} },
+                  { x: [telemetry.Location.lon[0]], y: [telemetry.Location.lat[0]], mode: 'markers', marker: {color: '#00fff0', size: 14} }
+              ], { ...layout, title: 'Fused GPS Track Map (IMU Dead Reckoning)', showlegend: false, height: 430 });
+          }
+
+          Plotly.newPlot('g-circle-canvas', [
+              { x: [0], y: [0], mode: 'markers+lines', marker: {color: '#ff4b4b', size: 12} }
+          ], { ...layout, title: 'Friction Crosshair G-G Circle', xaxis: {range: [-2, 2]}, yaxis: {range: [-2, 2]}, height: 430 });
+      }
+
+      function updateDashboardHUD() {
+          const targetTime = Math.max(0, Math.min(audio.currentTime + offset, maxTime));
+
+          // Map the current timestamp to our shared high-density master array index
+          let idx = findIndex(telemetry.Location.time, targetTime);
+          if (idx === -1) return;
+
+          // 1. Update fused location and vehicle speed markers
+          let lonVal = telemetry.Location.lon[idx];
+          let latVal = telemetry.Location.lat[idx];
+          document.getElementById('hud-speed').innerText = telemetry.Location.speed[idx].toFixed(1) + " MPH";
+          Plotly.restyle('map-canvas', { x: [[lonVal]], y: [[latVal]] }, [1]);
+
+          // 2. Track real-time chassis rotation metrics via Gyroscope
+          if (telemetry.Gyroscope) {
+              document.getElementById('hud-yaw').innerText = telemetry.Gyroscope.z[idx].toFixed(2) + " rad/s";
+          }
+
+          // 3. Track absolute vehicle look direction orientation angles
+          if (telemetry.Orientation) {
+              document.getElementById('hud-look').innerText = telemetry.Orientation.yaw[idx].toFixed(0) + "°";
+          }
+
+          // 4. Trace longitudinal dynamic forces to indicate throttle/braking transitions
+          if (telemetry.Accelerometer) {
+              let gX = telemetry.Accelerometer.x[idx];
+              let gY = telemetry.Accelerometer.y[idx];
+
+              Plotly.restyle('g-circle-canvas', { x: [[0, gX / 9.81]], y: [[0, gY / 9.81]] }, [0]);
+
+              const accelBox = document.getElementById('hud-accel');
+              if (gY > 1.2) {
+                  accelBox.innerText = "⚡ THROTTLE APPLY";
+                  accelBox.classList.add('accel-active');
+              } else if (gY < -1.2) {
+                  accelBox.innerText = "🛑 HEAVY BRAKING";
+                  accelBox.classList.remove('accel-active');
+              } else {
+                  accelBox.innerText = "COASTING / IDLE";
+                  accelBox.classList.remove('accel-active');
+              }
+          }
+      }
+    </script>
+  </body>
+</html>

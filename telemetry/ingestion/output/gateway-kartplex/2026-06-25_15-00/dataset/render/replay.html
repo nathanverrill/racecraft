@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Lap Story · Gateway Kartplex T1</title>
+<style>
+  :root{--bg:#05060a;--cyan:#00e5ff;--mag:#ff2bd6;--white:#eaf2fa;--dim:#7d8a9a;
+    --purple:#b14cff;--green:#21e065;--yellow:#ffd23f;--red:#ff3b3b;--grid:#161d27;}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--white);overflow:hidden;
+    font-family:"SF Mono",ui-monospace,"Roboto Mono",Menlo,monospace;}
+  #stage{position:fixed;inset:0}
+  #scene{width:100%;height:100%;display:block}
+  /* overlays */
+  .ov{position:absolute;pointer-events:none}
+  #title{top:34px;left:40px}
+  #title .t{font-size:30px;font-weight:800;letter-spacing:1px;
+    text-shadow:0 2px 24px rgba(0,229,255,.35)}
+  #title .s{color:var(--cyan);font-size:14px;margin-top:6px;letter-spacing:2px}
+  #speedbox{right:46px;top:40px;text-align:right}
+  #speedbox .v{font-size:96px;font-weight:800;line-height:.9;font-variant-numeric:tabular-nums;
+    text-shadow:0 4px 40px rgba(0,229,255,.3)}
+  #speedbox .u{color:var(--cyan);font-size:18px;letter-spacing:6px}
+  #corner{left:50%;top:20%;transform:translateX(-50%);text-align:center;opacity:0;transition:opacity .25s}
+  #corner .c{font-size:40px;font-weight:800;color:var(--cyan);letter-spacing:3px;
+    text-shadow:0 2px 30px rgba(0,229,255,.5)}
+  #corner .d{color:var(--dim);font-size:14px;letter-spacing:2px;margin-top:4px}
+  #splits{left:50%;bottom:120px;transform:translateX(-50%);display:flex;gap:16px}
+  .split{padding:10px 20px;border-radius:10px;background:rgba(14,18,24,.7);
+    border:1px solid var(--grid);text-align:center;min-width:120px;backdrop-filter:blur(8px)}
+  .split .l{font-size:11px;color:var(--dim);letter-spacing:2px}
+  .split .v{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:3px}
+  #lapbanner{left:50%;bottom:60px;transform:translateX(-50%);text-align:center}
+  #lapbanner .l{font-size:13px;color:var(--dim);letter-spacing:3px}
+  #lapbanner .v{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}
+  #revstrip{left:50%;top:24px;transform:translateX(-50%);display:flex;gap:5px}
+  .rl{width:20px;height:11px;border-radius:3px;background:#1a212b}
+  #start{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(circle at 50% 40%,#0b1018,#05060a);z-index:10;cursor:pointer;
+    flex-direction:column;gap:18px}
+  #start .big{font-size:40px;font-weight:800;letter-spacing:2px}
+  #start .go{border:1px solid var(--cyan);color:var(--cyan);border-radius:30px;padding:14px 34px;
+    font-size:16px;letter-spacing:2px}
+  #start .hint{color:var(--dim);font-size:13px}
+  #sponsors{position:absolute;left:0;right:0;bottom:18px;display:flex;justify-content:center;
+    gap:22px;opacity:.45;filter:saturate(.2)}
+  #sponsors .sp{font-weight:800;font-size:12px;letter-spacing:2px;color:#9fb0c0;text-transform:uppercase}
+  #sponsors .dot{color:var(--grid)}
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="scene"></canvas>
+  <div class="ov" id="title"><div class="t">LAP STORY</div><div class="s" id="subt">GATEWAY KARTPLEX T1</div></div>
+  <div class="ov" id="revstrip"></div>
+  <div class="ov" id="speedbox"><div class="v" id="spd">0</div><div class="u">MPH</div></div>
+  <div class="ov" id="corner"><div class="c" id="cname">T1</div><div class="d" id="cinfo"></div></div>
+  <div class="ov" id="splits"></div>
+  <div class="ov" id="lapbanner"><div class="l">LAP TIME</div><div class="v" id="laptime">0.000</div></div>
+  <div class="ov" id="sponsors">
+    <span class="sp" style="color:#eaf2fa;font-size:15px"> Apple</span>
+    <span class="dot">·</span><span class="sp" style="color:#ff8000">McLaren</span>
+    <span class="dot">·</span><span class="sp" style="color:#d9a441">✳ Claude</span>
+    <span class="dot">·</span><span class="sp">Sodi Racing</span>
+    <span class="dot">·</span><span class="sp">Honda</span>
+  </div>
+</div>
+<div id="start">
+  <div class="big" id="startTitle">★ BEST LAP REPLAY</div>
+  <div class="hint" id="startHint">engine audio · camera-follow · sector splits</div>
+  <div class="go">▶ PLAY</div>
+</div>
+
+<script>
+const COL={cyan:"#00e5ff",mag:"#ff2bd6",white:"#eaf2fa",dim:"#7d8a9a",grid:"#161d27",
+  purple:"#b14cff",green:"#21e065",yellow:"#ffd23f",red:"#ff3b3b"};
+const $=id=>document.getElementById(id);
+let D,S,N,vmax,dur,aud,trk,apexes,lapInfo,t0,t1,bestLap,splitFracs=[0.45,0.83];
+let scene,ctx,W,H;
+
+function speedColor(v){const f=Math.max(0,Math.min(1,v/vmax));
+  const st=[[0,[20,60,160]],[.4,[0,229,255]],[.75,[255,210,63]],[1,[255,43,214]]];
+  for(let i=1;i<st.length;i++)if(f<=st[i][0]){const a=st[i-1],b=st[i],t=(f-a[0])/(b[0]-a[0]);
+    return`rgb(${a[1].map((c,j)=>Math.round(c+(b[1][j]-c)*t)).join(",")})`;}return"rgb(255,43,214)";}
+
+async function boot(){
+  D=await(await fetch("render.json")).json();S=D.series;N=S.t.length;vmax=D.max_speed_mph;dur=D.duration_s;
+  trk=D.track_polyline;apexes=D.apexes;
+  // choose best lap window
+  bestLap=D.analytics.reference_lap;
+  const idx=S.lap.map((l,i)=>l===bestLap?i:-1).filter(i=>i>=0);
+  t0=S.t[idx[0]];t1=S.t[idx[idx.length-1]];
+  lapInfo=D.laps.find(l=>l.lap===bestLap)||{lap_time:D.analytics.actual_best_lap_s};
+  $("subt").textContent=`GATEWAY KARTPLEX T1 · KART #19 · LAP ${bestLap}`;
+  $("startTitle").textContent=`★ BEST LAP · ${(lapInfo.lap_time||0).toFixed(3)}s`;
+  aud=new Audio("session.wav");aud.preload="auto";
+  scene=$("scene");ctx=scene.getContext("2d");size();window.onresize=size;
+  // splits panel
+  $("splits").innerHTML=["S1","S2","S3"].map(s=>`<div class="split"><div class="l">${s}</div>
+    <div class="v" id="sv${s}" style="color:${COL.dim}">–</div></div>`).join("");
+  $("start").onclick=start;
+  window.__ready=true;
+  window.__seekFrame=(t)=>{drawFrame(t0+ (t||0));};   // for video: t is lap-relative
+  requestAnimationFrame(loop);
+}
+function size(){scene.width=innerWidth*devicePixelRatio;scene.height=innerHeight*devicePixelRatio;W=scene.width;H=scene.height;}
+
+let playing=false,playStart=0;
+function start(){$("start").style.display="none";aud.currentTime=t0;aud.play();playing=true;
+  // build rev strip
+  $("revstrip").innerHTML="";for(let i=0;i<22;i++){const d=document.createElement("div");d.className="rl";$("revstrip").appendChild(d);} }
+
+function idxAtT(t){let lo=0,hi=N-1;while(lo<hi){const m=(lo+hi)>>1;if(S.t[m]<t)lo=m+1;else hi=m;}return lo;}
+
+function loop(){
+  if(playing){const t=aud.currentTime;
+    if(t>=t1){aud.pause();playing=false;}
+    drawFrame(t);}
+  requestAnimationFrame(loop);
+}
+
+function camera(cx,cy,zoom){ // returns mapping fn normalized->screen, centered on (cx,cy)
+  const s=Math.min(W,H)*zoom;
+  return (x,y)=>[W/2+(x-cx)*s, H/2-(y-cy)*s];
+}
+function drawFrame(t){
+  t=Math.max(t0,Math.min(t1,t));
+  const i=idxAtT(t), lapT=t-t0;
+  const cx=S.x[i],cy=S.y[i];
+  const map=camera(cx,cy,2.4);
+  ctx.fillStyle="#05060a";ctx.fillRect(0,0,W,H);
+  // full track faint
+  ctx.lineWidth=Math.max(10,W*0.014);ctx.strokeStyle="#10161e";ctx.lineJoin="round";ctx.lineCap="round";
+  ctx.beginPath();trk.forEach((p,k)=>{const[a,b]=map(p[0],p[1]);k?ctx.lineTo(a,b):ctx.moveTo(a,b);});ctx.stroke();
+  // driven trail this lap up to now, speed-colored
+  const i0=idxAtT(t0);
+  ctx.lineWidth=Math.max(6,W*0.009);
+  for(let k=i0+1;k<=i;k++){const[a0,b0]=map(S.x[k-1],S.y[k-1]);const[a1,b1]=map(S.x[k],S.y[k]);
+    ctx.strokeStyle=speedColor(S.speed_mph[k]);ctx.beginPath();ctx.moveTo(a0,b0);ctx.lineTo(a1,b1);ctx.stroke();}
+  // apex labels near view
+  ctx.font=`${Math.round(W*0.014)}px monospace`;
+  apexes.forEach(ap=>{const[a,b]=map(ap.x,ap.y);if(a<-50||a>W+50||b<-50||b>H+50)return;
+    ctx.strokeStyle=COL.dim;ctx.lineWidth=2;ctx.beginPath();ctx.arc(a,b,Math.max(5,W*0.006),0,7);ctx.stroke();
+    ctx.fillStyle=COL.dim;ctx.fillText("T"+ap.num,a+8,b-8);});
+  // impacts
+  D.impacts.forEach(im=>{const[a,b]=map(im.x,im.y);ctx.fillStyle="rgba(255,59,59,.8)";
+    ctx.font=`${Math.round(W*0.024)}px monospace`;ctx.textAlign="center";ctx.fillText("★",a,b);ctx.textAlign="left";});
+  // car dot with glow
+  const[ax,ay]=map(cx,cy);
+  const grd=ctx.createRadialGradient(ax,ay,0,ax,ay,W*0.05);
+  grd.addColorStop(0,"rgba(0,229,255,.5)");grd.addColorStop(1,"rgba(0,229,255,0)");
+  ctx.fillStyle=grd;ctx.beginPath();ctx.arc(ax,ay,W*0.05,0,7);ctx.fill();
+  ctx.fillStyle=COL.white;ctx.strokeStyle=COL.cyan;ctx.lineWidth=4;
+  ctx.beginPath();ctx.arc(ax,ay,Math.max(7,W*0.013),0,7);ctx.fill();ctx.stroke();
+
+  // HUD
+  $("spd").textContent=Math.round(S.speed_mph[i]);
+  $("laptime").textContent=lapT.toFixed(3);
+  // rev strip
+  const f=Math.max(0,Math.min(1,S.speed_mph[i]/vmax));
+  document.querySelectorAll(".rl").forEach((el,k)=>{const on=k/22<=f;
+    el.style.background=on?(k<13?COL.green:(k<18?COL.yellow:COL.red)):"#1a212b";});
+  // distance fraction within lap for splits + corner callout
+  const lapFrac=(i-i0)/(idxAtT(t1)-i0);
+  const svals=[$("svS1"),$("svS2"),$("svS3")];
+  // live sector split times (relative)
+  // corner callout: nearest apex within small frac window
+  let near=null,best=1e9;
+  apexes.forEach(ap=>{const af=ap.dist_frac??null;});
+  // use proximity in screen space for callout
+  let nd=1e9,nc=null;
+  apexes.forEach(ap=>{const d=(ap.x-cx)**2+(ap.y-cy)**2;if(d<nd){nd=d;nc=ap;}});
+  if(nc&&Math.sqrt(nd)<0.05){$("corner").style.opacity=1;$("cname").textContent="TURN "+nc.num;
+    $("cinfo").textContent=nc.sector;}
+  else $("corner").style.opacity=0;
+}
+boot();
+</script>
+</body>
+</html>

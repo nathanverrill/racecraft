@@ -1,0 +1,13 @@
+{
+  "_README": "Georeference metadata for the satellite SCREENSHOT dropped in inbox. A screenshot carries NO embedded coordinates; these come from the Google Maps URL. Use center+scale (and the visible 100 ft scale bar) to compute image lat/lon bounds for the FUTURE map-overlay consumer (Tier-2, deferred). APPROXIMATE - validate against phone GPS track; do not treat as survey-grade.",
+  "source": "Google Maps satellite screenshot (user-provided)",
+  "maps_url": "https://www.google.com/maps/place/Gateway+Kartplex/@38.6490038,-90.1350350,270m/data=...",
+  "center": { "lat": 38.6490038, "lon": -90.1350350 },
+  "scale_param": "270m",
+  "scale_bar_visible": "100 ft (bottom-right)",
+  "address": "700 Raceway Blvd, Madison, IL 62060",
+  "plus_code": "JVX7+HX Madison, Illinois",
+  "venue": "Gateway Kartplex (World Wide Technology Raceway)",
+  "image_file": "one of inbox/gateway-kartplex/IMG_*.HEIC (the top-down satellite view; vision-classify)",
+  "usage": "DEFERRED Tier-2 overlay only. Stage-A dataset build does NOT need this. Geometry truth = phone GPS."
+}

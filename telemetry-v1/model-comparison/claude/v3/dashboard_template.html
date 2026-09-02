@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Kart Telemetry — Engine Replay</title>
+<style>
+  :root{
+    --bg:#070A0F; --bg2:#0B0F16; --panel:#0E141E; --panel2:#111824;
+    --line:#1B2530; --hair:#1A2430; --hair2:#24303E;
+    --ink:#E8EEF5; --ink2:#8A9AAD; --ink3:#56697E;
+    --muted:#5A6B7E;
+    --accent:#FF7A1A;      /* live / playhead */
+    --accentB:#FFB060;
+    --cool:#2D6CFF; --cyan:#10E0E8; --amber:#FFC400; --hot:#FF3B30;
+    --good:#27E0A0; --warn:#FFC400; --bad:#FF4D4D;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Mono","Roboto Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --r:10px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; background:
+      radial-gradient(1200px 700px at 78% -10%, #0F1722 0%, transparent 60%),
+      radial-gradient(900px 600px at 0% 110%, #0C1119 0%, transparent 55%),
+      var(--bg);
+    color:var(--ink); font-family:var(--sans);
+    -webkit-font-smoothing:antialiased; overflow:hidden;
+  }
+  .mono{font-family:var(--mono); font-variant-numeric:tabular-nums; font-feature-settings:"tnum" 1}
+  .lab{font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); font-weight:600}
+
+  /* ---------- shell ---------- */
+  .app{display:grid; grid-template-rows:auto 1fr auto auto; height:100vh; height:100dvh; gap:10px; padding:12px}
+  @media (max-width:900px){ body{overflow:auto} .app{height:auto; min-height:100dvh} }
+
+  /* ---------- header ---------- */
+  header{display:flex; align-items:center; gap:16px; padding:2px 6px}
+  .badge{display:flex; align-items:center; gap:9px}
+  .spark{width:11px;height:11px;border-radius:50%;background:var(--accent);
+    box-shadow:0 0 0 0 rgba(255,122,26,.6); animation:pulse 2.4s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,122,26,.5)}70%{box-shadow:0 0 0 9px rgba(255,122,26,0)}100%{box-shadow:0 0 0 0 rgba(255,122,26,0)}}
+  .title{font-weight:700; letter-spacing:.02em; font-size:15px}
+  .sub{font-size:11px;color:var(--ink2); margin-top:1px}
+  header .spacer{flex:1}
+  .chip{display:flex;flex-direction:column;align-items:flex-end;line-height:1.15}
+  .chip b{font-family:var(--mono);font-size:14px;font-variant-numeric:tabular-nums}
+  .qbar{display:flex;gap:2px;margin-top:3px}
+  .qbar i{width:5px;height:9px;border-radius:1px;background:var(--hair2)}
+
+  /* ---------- main grid ---------- */
+  .main{display:grid; grid-template-columns:minmax(0,1.55fr) minmax(300px,1fr); gap:10px; min-height:0}
+  @media (max-width:900px){ .main{grid-template-columns:1fr} }
+  .card{background:linear-gradient(180deg,var(--panel) 0%, var(--bg2) 100%);
+    border:1px solid var(--hair); border-radius:var(--r); position:relative; overflow:hidden}
+  .card .hd{position:absolute; top:10px; left:12px; z-index:3; display:flex; gap:8px; align-items:center}
+  .card .hd .lab{color:#7C8DA0}
+
+  /* track map */
+  #mapCard{min-height:280px}
+  #map{position:absolute; inset:0; width:100%; height:100%}
+  .map-legend{position:absolute; bottom:10px; left:12px; z-index:3; display:flex; align-items:center; gap:8px}
+  .grad{width:120px;height:6px;border-radius:3px;
+    background:linear-gradient(90deg,var(--cool),var(--cyan),var(--amber),var(--hot))}
+
+  /* right column */
+  .right{display:grid; grid-template-rows:auto auto 1fr; gap:10px; min-height:0}
+  .right .row{display:grid; gap:10px}
+
+  /* speed hero */
+  #speedCard{padding:14px 16px 12px; display:flex; flex-direction:column; justify-content:space-between}
+  .speed-top{display:flex; justify-content:space-between; align-items:flex-start}
+  .speedval{font-family:var(--mono); font-weight:700; font-size:84px; line-height:.82; letter-spacing:-.03em;
+    font-variant-numeric:tabular-nums; background:linear-gradient(180deg,#fff,#9fb6cf);
+    -webkit-background-clip:text; background-clip:text; color:transparent; margin-top:6px}
+  .speedunit{font-size:13px;color:var(--ink2); margin-left:2px}
+  #speedArc{width:100%; height:30px; margin-top:8px}
+
+  /* gauge row */
+  .gauges{grid-template-columns:1fr 1fr 1fr}
+  .gauge{background:var(--panel2); border:1px solid var(--hair); border-radius:var(--r); padding:9px 10px; min-height:84px;
+    display:flex; flex-direction:column; justify-content:space-between}
+  .gauge .v{font-family:var(--mono); font-size:23px; font-weight:600; font-variant-numeric:tabular-nums; line-height:1}
+  .gauge .v small{font-size:11px;color:var(--ink2);font-weight:400;margin-left:2px}
+
+  /* friction + horizon */
+  .duo{grid-template-columns:1fr 1fr}
+  #ggCard,#horizonCard{min-height:0; aspect-ratio:1/1}
+  #gg,#horizon{position:absolute; inset:0; width:100%; height:100%}
+  .center-read{position:absolute; left:0; right:0; bottom:10px; text-align:center; z-index:3}
+  .center-read b{font-family:var(--mono); font-size:16px; font-variant-numeric:tabular-nums}
+
+  /* laps */
+  #lapCard{padding:10px 12px}
+  .laprow{display:flex; justify-content:space-between; align-items:baseline; gap:10px}
+  .lapbig{font-family:var(--mono); font-size:30px; font-weight:700; font-variant-numeric:tabular-nums; letter-spacing:-.02em}
+  .lapsub{display:flex; gap:16px; margin-top:6px}
+  .lapsub div{line-height:1.25}
+  .lapsub b{font-family:var(--mono); font-size:14px; font-variant-numeric:tabular-nums}
+
+  /* trace */
+  #traceCard{height:118px}
+  #trace{position:absolute; inset:0; width:100%; height:100%}
+  .trace-tabs{position:absolute; top:8px; right:10px; z-index:3; display:flex; gap:4px}
+  .tab{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink2);
+    border:1px solid var(--hair2); padding:3px 8px; border-radius:6px; cursor:pointer; user-select:none}
+  .tab.on{color:var(--ink); border-color:var(--accent); background:rgba(255,122,26,.08)}
+
+  /* transport */
+  .transport{background:linear-gradient(180deg,var(--panel) 0%, var(--bg2) 100%);
+    border:1px solid var(--hair); border-radius:var(--r); padding:10px 12px; display:flex; align-items:center; gap:14px}
+  .play{flex:none; width:50px;height:50px;border-radius:50%; border:none; cursor:pointer;
+    background:radial-gradient(circle at 30% 30%, #FF9A45, var(--accent)); color:#1a0f04;
+    display:flex;align-items:center;justify-content:center; box-shadow:0 4px 18px rgba(255,122,26,.35)}
+  .play:active{transform:scale(.96)}
+  .play svg{width:22px;height:22px}
+  .scrub-wrap{flex:1; min-width:0}
+  #scrub{position:relative; height:46px; cursor:pointer; border-radius:7px; overflow:hidden;
+    background:var(--bg); border:1px solid var(--hair)}
+  #scrubCanvas{position:absolute; inset:0; width:100%; height:100%}
+  .clock{flex:none; font-family:var(--mono); font-size:13px; color:var(--ink2); font-variant-numeric:tabular-nums; white-space:nowrap}
+  .clock b{color:var(--ink)}
+  .ctl{display:flex; align-items:center; gap:6px; flex:none}
+  .seg{display:flex; border:1px solid var(--hair2); border-radius:7px; overflow:hidden}
+  .seg button{background:transparent;border:none;color:var(--ink2);font-family:var(--mono);font-size:12px;
+    padding:6px 9px;cursor:pointer}
+  .seg button.on{background:rgba(255,122,26,.14); color:var(--accentB)}
+  .nudge{display:flex;align-items:center;gap:4px}
+  .nudge button{width:26px;height:28px;border-radius:6px;border:1px solid var(--hair2);background:transparent;color:var(--ink2);cursor:pointer;font-size:14px;line-height:1}
+  .nudge span{font-family:var(--mono);font-size:11px;color:var(--ink2);min-width:46px;text-align:center}
+  .loadaudio{font-size:11px;color:var(--accentB);border:1px solid var(--hair2);border-radius:7px;padding:7px 10px;cursor:pointer;background:transparent;white-space:nowrap}
+  .loadaudio:hover{border-color:var(--accent)}
+  input[type=file]{display:none}
+  @media (max-width:760px){
+    .transport{flex-wrap:wrap}
+    .ctl{order:3}
+  }
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+  @media (prefers-reduced-motion:reduce){ .spark{animation:none} }
+</style>
+</head>
+<body>
+<h2 class="sr-only">Kart telemetry dashboard: track map, speed, g-forces and lap times synced to engine audio playback.</h2>
+<div class="app">
+
+  <header>
+    <div class="badge">
+      <div class="spark" aria-hidden="true"></div>
+      <div>
+        <div class="title" id="sessName">KART TELEMETRY</div>
+        <div class="sub" id="sessSub">engine replay</div>
+      </div>
+    </div>
+    <div class="spacer"></div>
+    <div class="chip">
+      <span class="lab">Top speed</span>
+      <b id="topSpeed">—</b>
+    </div>
+    <div class="chip">
+      <span class="lab">Peak lat g</span>
+      <b id="peakG">—</b>
+    </div>
+    <div class="chip">
+      <span class="lab">GPS</span>
+      <div class="qbar" id="qbar" title="GPS signal quality"><i></i><i></i><i></i><i></i><i></i></div>
+    </div>
+  </header>
+
+  <div class="main">
+    <!-- TRACK MAP -->
+    <div class="card" id="mapCard">
+      <div class="hd"><span class="lab">Circuit</span></div>
+      <canvas id="map"></canvas>
+      <div class="map-legend"><span class="lab" style="color:var(--cool)">slow</span><div class="grad"></div><span class="lab" style="color:var(--hot)">fast</span></div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="right">
+      <div class="card" id="speedCard">
+        <div class="speed-top">
+          <span class="lab">Speed</span>
+          <span class="lab"><span id="distVal" class="mono" style="color:var(--ink)">0.00</span> km</span>
+        </div>
+        <div><span class="speedval mono" id="speedVal">0</span><span class="speedunit">km/h</span></div>
+        <canvas id="speedArc" aria-hidden="true"></canvas>
+      </div>
+
+      <div class="row gauges">
+        <div class="gauge">
+          <span class="lab">Lon g</span>
+          <div class="v mono" id="gLon">+0.00</div>
+          <span class="lab" id="gLonLab" style="letter-spacing:.1em">coast</span>
+        </div>
+        <div class="gauge">
+          <span class="lab">Lat g</span>
+          <div class="v mono" id="gLat">0.00</div>
+          <span class="lab" id="gLatLab" style="letter-spacing:.1em">—</span>
+        </div>
+        <div class="gauge">
+          <span class="lab" id="auxLab">Engine</span>
+          <div class="v mono" id="auxVal">—</div>
+          <span class="lab" id="auxSub" style="letter-spacing:.1em">loudness</span>
+        </div>
+      </div>
+
+      <div class="row duo" style="grid-template-rows:1fr">
+        <div class="card" id="ggCard">
+          <div class="hd"><span class="lab">G-force</span></div>
+          <canvas id="gg"></canvas>
+        </div>
+        <div class="card" id="horizonCard">
+          <div class="hd"><span class="lab">Bank</span></div>
+          <canvas id="horizon"></canvas>
+          <div class="center-read"><b class="mono" id="bankVal">0°</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LAP STRIP + TRACE -->
+  <div class="main" style="grid-template-columns:minmax(220px,.7fr) minmax(0,1.3fr)">
+    <div class="card" id="lapCard">
+      <div class="laprow">
+        <div>
+          <span class="lab">Lap</span>
+          <div class="lapbig mono"><span id="lapNo">–</span><span style="color:var(--ink3);font-size:18px">/<span id="lapTot">–</span></span></div>
+        </div>
+        <div style="text-align:right">
+          <span class="lab">Current</span>
+          <div class="lapbig mono" id="lapCur" style="color:var(--accentB)">0:00.0</div>
+        </div>
+      </div>
+      <div class="lapsub">
+        <div><span class="lab">Last</span><br><b id="lapLast">—</b></div>
+        <div><span class="lab">Best</span><br><b id="lapBest" style="color:var(--good)">—</b></div>
+        <div><span class="lab">Heading</span><br><b id="hdgVal">—</b></div>
+        <div><span class="lab" id="elevLab">Elev</span><br><b id="elevVal">—</b></div>
+      </div>
+    </div>
+
+    <div class="card" id="traceCard">
+      <div class="trace-tabs">
+        <span class="tab on" data-ch="speed">Speed</span>
+        <span class="tab" data-ch="gLat">Lat g</span>
+        <span class="tab" data-ch="elev">Elev</span>
+      </div>
+      <canvas id="trace"></canvas>
+    </div>
+  </div>
+
+  <!-- TRANSPORT -->
+  <div class="transport">
+    <button class="play" id="playBtn" aria-label="Play or pause">
+      <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+    </button>
+    <div class="scrub-wrap">
+      <div id="scrub" role="slider" aria-label="Playback position" tabindex="0"><canvas id="scrubCanvas"></canvas></div>
+    </div>
+    <div class="clock"><b id="tCur">0:00</b> / <span id="tTot">0:00</span></div>
+    <div class="ctl">
+      <div class="seg" id="rateSeg" title="Playback speed">
+        <button data-r="0.5">.5×</button>
+        <button data-r="1" class="on">1×</button>
+        <button data-r="2">2×</button>
+      </div>
+      <div class="nudge" title="Nudge audio/data sync">
+        <button id="syncMinus" aria-label="Sync earlier">−</button>
+        <span class="mono" id="syncVal">sync 0.0s</span>
+        <button id="syncPlus" aria-label="Sync later">+</button>
+      </div>
+      <button class="loadaudio" id="loadAudioBtn">Load engine audio</button>
+      <input type="file" id="audioInput" accept="audio/*,video/mp4,.mp4,.m4a,.caf" />
+    </div>
+  </div>
+</div>
+
+<audio id="audio" preload="auto" src="__AUDIO_SRC__"></audio>
+
+<script>
+"use strict";
+const DATA = /*__TELEMETRY__*/null;
+
+/* ------------------------------------------------------------------ helpers */
+const $ = s => document.querySelector(s);
+const clamp = (v,a,b)=>v<a?a:v>b?b:v;
+const lerp = (a,b,t)=>a+(b-a)*t;
+const fmtClock = s => { s=Math.max(0,s); const m=Math.floor(s/60); const r=s-m*60;
+  return m+":"+(r<10?"0":"")+r.toFixed(0); };
+const fmtLap = s => { if(s==null||!isFinite(s))return "—"; const m=Math.floor(s/60); const r=s-m*60;
+  return m+":"+(r<10?"0":"")+r.toFixed(1); };
+
+const M = DATA.meta;
+const T = DATA.t, SP = DATA.speed;
+const TRACK = DATA.track||[], TSPEED = DATA.trackSpeed||[], DOTX = DATA.dotx, DOTY = DATA.doty;
+const GLAT = DATA.gLat, GLON = DATA.gLon, HEAD = DATA.heading, BANK = DATA.bank;
+const DIST = DATA.dist, ELEV = DATA.elev, GACC = DATA.gpsAcc, LOUD = DATA.loud, VIB = DATA.vib;
+const N = M.n;
+const STEP = (T[1]-T[0]) || (1/M.hz);
+const DUR_TEL = M.duration;
+const UNIT = M.speedUnit||"mph";
+/* colour-ramp domain from the track's own speed spread (max contrast) */
+let MINSPD = Math.min.apply(null, TSPEED.length?TSPEED:[0]);
+let MAXSPD = Math.max.apply(null, TSPEED.length?TSPEED:[M.maxSpeed||1]);
+if(!(MAXSPD>MINSPD)){ MINSPD=0; MAXSPD=Math.max(1,M.maxSpeed||1); }
+
+/* speed -> colour ramp (cool→cyan→amber→hot) */
+const STOPS = [[0,[45,108,255]],[0.4,[16,224,232]],[0.72,[255,196,0]],[1,[255,59,48]]];
+function speedColor(v){ const f=clamp((v-MINSPD)/((MAXSPD-MINSPD)||1),0,1); let a=STOPS[0],b=STOPS[STOPS.length-1];
+  for(let i=0;i<STOPS.length-1;i++){ if(f>=STOPS[i][0]&&f<=STOPS[i+1][0]){a=STOPS[i];b=STOPS[i+1];break;} }
+  const t=(f-a[0])/((b[0]-a[0])||1);
+  return `rgb(${Math.round(lerp(a[1][0],b[1][0],t))},${Math.round(lerp(a[1][1],b[1][1],t))},${Math.round(lerp(a[1][2],b[1][2],t))})`; }
+
+/* canvas DPR setup */
+function setup(cv){ const ctx=cv.getContext("2d"); function size(){ const r=cv.getBoundingClientRect();
+  const dpr=Math.min(2.5,window.devicePixelRatio||1); cv.width=Math.max(1,r.width*dpr); cv.height=Math.max(1,r.height*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0); return {w:r.width,h:r.height}; } return {ctx,size}; }
+
+/* index from time on a uniform grid */
+function idxAt(t){ return clamp(Math.round((t-T[0])/STEP),0,N-1); }
+function sampleLerp(arr,t){ if(!arr)return null; const f=clamp((t-T[0])/STEP,0,N-1);
+  const i=Math.floor(f), j=Math.min(i+1,N-1); return lerp(arr[i],arr[j],f-i); }
+
+/* ------------------------------------------------------------------ header */
+$("#sessName").textContent = (M.name||"KART SESSION").replace(/_/g," ");
+$("#sessSub").textContent = (M.driver? M.driver+" · " : "") + (M.device? M.device+" · " : "") + (M.laps.length? M.laps.length+" laps · ":"") + DUR_TEL.toFixed(0)+"s recorded";
+$("#topSpeed").textContent = M.maxSpeed.toFixed(0)+" "+UNIT;
+$("#peakG").textContent = M.maxLatG.toFixed(2)+" g";
+$("#lapTot").textContent = M.laps.length||"–";
+document.querySelectorAll(".speedunit").forEach(e=>e.textContent=UNIT);
+if(M.hasLoudness){ $("#auxLab").textContent="Engine"; $("#auxSub").textContent="loudness dBFS"; }
+else if(M.hasVibration){ $("#auxLab").textContent="Vibration"; $("#auxSub").textContent="imu energy"; }
+else { $("#auxLab").textContent="GPS"; $("#auxSub").textContent="accuracy m"; }
+if(!M.hasElevation){ $("#elevLab").textContent="GPS acc"; }
+
+/* ------------------------------------------------------------------ TRACK MAP */
+const mapCv=$("#map"); const mapR=setup(mapCv); let mapDim, mapTfx, lineLayer=null;
+function projectFit(w,h){ const pad=Math.min(w,h)*0.10;
+  const bx0=M.bounds.minX,bx1=M.bounds.maxX,by0=M.bounds.minY,by1=M.bounds.maxY;
+  const bw=Math.max(1,bx1-bx0),bh=Math.max(1,by1-by0);
+  const s=Math.min((w-2*pad)/bw,(h-2*pad)/bh);
+  const ox=(w-s*bw)/2-bx0*s, oy=(h-s*bh)/2-by0*s;
+  return {s,ox,oy,h};
+}
+function wx(x){ return mapTfx.ox + x*mapTfx.s; }
+function wy(y){ return mapTfx.h - (mapTfx.oy + y*mapTfx.s); } /* flip: north up */
+
+function drawLineLayer(){ /* cache the clean track silhouette (speed heat-map) */
+  const {w,h}=mapDim; mapTfx=projectFit(w,h);
+  const off=document.createElement("canvas"); const dpr=Math.min(2.5,window.devicePixelRatio||1);
+  off.width=w*dpr; off.height=h*dpr; const c=off.getContext("2d"); c.setTransform(dpr,0,0,dpr,0,0);
+  c.lineCap="round"; c.lineJoin="round";
+  const P=TRACK; if(!P.length){ lineLayer=off; return; }
+  const close=M.trackClosed;
+  const path=(width)=>{ c.lineWidth=width; c.beginPath(); c.moveTo(wx(P[0][0]),wy(P[0][1]));
+    for(let i=1;i<P.length;i++) c.lineTo(wx(P[i][0]),wy(P[i][1])); if(close) c.closePath(); };
+  /* tarmac base: a wide dark ribbon so the dot always rides "on track" */
+  path(20); c.strokeStyle="#11171F"; c.stroke();
+  path(18); c.strokeStyle="#1A222D"; c.stroke();
+  /* thin kerb edge */
+  path(18); c.strokeStyle="rgba(120,150,190,0.10)"; c.lineWidth=1; 
+  /* speed heat-map centre line */
+  c.lineCap="round";
+  for(let i=1;i<P.length;i++){ c.beginPath(); c.lineWidth=4.2;
+    c.strokeStyle=speedColor((TSPEED[i]+TSPEED[i-1])/2);
+    c.moveTo(wx(P[i-1][0]),wy(P[i-1][1])); c.lineTo(wx(P[i][0]),wy(P[i][1])); c.stroke(); }
+  if(close && P.length>1){ c.beginPath(); c.lineWidth=4.2; c.strokeStyle=speedColor((TSPEED[0]+TSPEED[P.length-1])/2);
+    c.moveTo(wx(P[P.length-1][0]),wy(P[P.length-1][1])); c.lineTo(wx(P[0][0]),wy(P[0][1])); c.stroke(); }
+  /* start / finish line */
+  if(M.startLine){
+    const a2=M.startLine[0], b2=M.startLine[1];
+    c.strokeStyle="#E8EEF5"; c.lineWidth=3; c.lineCap="butt";
+    c.beginPath(); c.moveTo(wx(a2[0]),wy(a2[1])); c.lineTo(wx(b2[0]),wy(b2[1])); c.stroke();
+    /* small checker nub at the line midpoint */
+    c.fillStyle="#E8EEF5";
+    c.beginPath(); c.arc(wx((a2[0]+b2[0])/2),wy((a2[1]+b2[1])/2),2.5,0,7); c.fill();
+  } else {
+    const s0=M.start||P[0]; const a=P[0], b=P[1<P.length?1:0];
+    const ang=Math.atan2(wy(b[1])-wy(a[1]), wx(b[0])-wx(a[0]))+Math.PI/2;
+    const sx=wx(s0[0]), sy=wy(s0[1]), L=9;
+    c.strokeStyle="#E8EEF5"; c.lineWidth=2.5;
+    c.beginPath(); c.moveTo(sx+Math.cos(ang)*L,sy+Math.sin(ang)*L); c.lineTo(sx-Math.cos(ang)*L,sy-Math.sin(ang)*L); c.stroke();
+  }
+  /* incident zones */
+  const inc=M.incidents||[];
+  for(const z of inc){ const zx=wx(z.x), zy=wy(z.y); const rr=Math.max(8,(z.r||18)*(mapTfx.s));
+    c.strokeStyle="rgba(255,90,70,0.85)"; c.fillStyle="rgba(255,90,70,0.10)"; c.lineWidth=1.5;
+    c.beginPath(); c.arc(zx,zy,Math.min(rr,26),0,7); c.fill(); c.stroke();
+    c.fillStyle="rgba(255,140,120,0.95)"; c.font="600 10px var(--sans)"; c.textAlign="center";
+    c.fillText((z.label||"!").toUpperCase(), zx, zy-Math.min(rr,26)-4); c.textAlign="left"; }
+  lineLayer=off;
+}
+function resizeMap(){ mapDim=mapR.size(); drawLineLayer(); }
+
+/* ------------------------------------------------------------------ SPEED ARC */
+const arcCv=$("#speedArc"); const arcR=setup(arcCv); let arcDim;
+function drawArc(v){ const {w,h}=arcDim; const ctx=arcR.ctx; ctx.clearRect(0,0,w,h);
+  const y=h-3, r=4; const f=clamp(v/MAXSPD,0,1);
+  ctx.lineWidth=6; ctx.lineCap="round";
+  ctx.strokeStyle="#1A2430"; ctx.beginPath(); ctx.moveTo(r,y); ctx.lineTo(w-r,y); ctx.stroke();
+  const grad=ctx.createLinearGradient(0,0,w,0);
+  grad.addColorStop(0,"#2D6CFF");grad.addColorStop(.4,"#10E0E8");grad.addColorStop(.72,"#FFC400");grad.addColorStop(1,"#FF3B30");
+  ctx.strokeStyle=grad; ctx.beginPath(); ctx.moveTo(r,y); ctx.lineTo(r+(w-2*r)*f,y); ctx.stroke();
+  /* ticks */
+  ctx.fillStyle="#2A3848"; for(let k=0;k<=4;k++){ const tx=r+(w-2*r)*(k/4); ctx.fillRect(tx-0.5,y-12,1,5); }
+}
+
+/* ------------------------------------------------------------------ FRICTION CIRCLE */
+const ggCv=$("#gg"); const ggR=setup(ggCv); let ggDim; const ggTrail=[];
+function drawGG(gl,go){ const {w,h}=ggDim; const ctx=ggR.ctx; ctx.clearRect(0,0,w,h);
+  const cx=w/2, cy=h/2, R=Math.min(w,h)/2-16, MAXG=2.0;
+  ctx.lineWidth=1; ctx.strokeStyle="#17202B";
+  for(let g=0.5; g<=MAXG+0.01; g+=0.5){ ctx.beginPath(); ctx.arc(cx,cy,R*(g/MAXG),0,7); ctx.stroke(); }
+  ctx.beginPath(); ctx.moveTo(cx-R,cy);ctx.lineTo(cx+R,cy);ctx.moveTo(cx,cy-R);ctx.lineTo(cx,cy+R); ctx.stroke();
+  ctx.fillStyle="#3A4A5C"; ctx.font="9px var(--mono)"; ctx.textAlign="center";
+  ctx.fillText("1g",cx+R*0.5+8,cy-3); ctx.fillText("2g",cx+R+0,cy-3);
+  /* trail */
+  ggTrail.push([gl,go]); if(ggTrail.length>45) ggTrail.shift();
+  for(let i=0;i<ggTrail.length;i++){ const a=i/ggTrail.length;
+    const px=cx+clamp(ggTrail[i][0]/MAXG,-1.2,1.2)*R, py=cy-clamp(ggTrail[i][1]/MAXG,-1.2,1.2)*R;
+    ctx.fillStyle=`rgba(255,122,26,${a*0.5})`; ctx.beginPath(); ctx.arc(px,py,2.2,0,7); ctx.fill(); }
+  /* live dot */
+  const dx=cx+clamp(gl/MAXG,-1.2,1.2)*R, dy=cy-clamp(go/MAXG,-1.2,1.2)*R;
+  ctx.shadowColor="rgba(255,122,26,.8)"; ctx.shadowBlur=12;
+  ctx.fillStyle="#FF9A45"; ctx.beginPath(); ctx.arc(dx,dy,5.5,0,7); ctx.fill();
+  ctx.shadowBlur=0;
+}
+
+/* ------------------------------------------------------------------ ARTIFICIAL HORIZON */
+const hzCv=$("#horizon"); const hzR=setup(hzCv); let hzDim;
+function drawHorizon(bank){ const {w,h}=hzDim; const ctx=hzR.ctx; ctx.clearRect(0,0,w,h);
+  const cx=w/2, cy=h/2, R=Math.min(w,h)/2-12;
+  ctx.save(); ctx.beginPath(); ctx.arc(cx,cy,R,0,7); ctx.clip();
+  ctx.translate(cx,cy); ctx.rotate(-bank*Math.PI/180);
+  ctx.fillStyle="#15324a"; ctx.fillRect(-R*2,-R*2,R*4,R*2);     /* sky */
+  ctx.fillStyle="#0c1a12"; ctx.fillRect(-R*2,0,R*4,R*2);        /* ground */
+  ctx.strokeStyle="#FF7A1A"; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(-R*1.4,0);ctx.lineTo(R*1.4,0);ctx.stroke();
+  ctx.strokeStyle="rgba(255,255,255,.25)"; ctx.lineWidth=1;
+  for(let p=-2;p<=2;p++){ if(!p)continue; const yy=p*R*0.22; ctx.beginPath(); ctx.moveTo(-R*0.4,yy);ctx.lineTo(R*0.4,yy);ctx.stroke(); }
+  ctx.restore();
+  ctx.strokeStyle="#22303E"; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(cx,cy,R,0,7); ctx.stroke();
+  /* fixed aircraft mark */
+  ctx.strokeStyle="#fff"; ctx.lineWidth=2.5; ctx.beginPath();
+  ctx.moveTo(cx-16,cy);ctx.lineTo(cx-5,cy);ctx.moveTo(cx+5,cy);ctx.lineTo(cx+16,cy);
+  ctx.moveTo(cx,cy-3);ctx.lineTo(cx,cy); ctx.stroke();
+}
+
+/* ------------------------------------------------------------------ COMPASS (heading on lap card uses text) */
+
+/* ------------------------------------------------------------------ TRACE */
+const trCv=$("#trace"); const trR=setup(trCv); let trDim, trLayer=null, trCh="speed";
+const CH={ speed:{a:SP,color:"#10E0E8",lab:UNIT,fmt:v=>v.toFixed(0)},
+          gLat:{a:GLAT,color:"#FF7A1A",lab:"lat g",fmt:v=>v.toFixed(2),bipolar:true},
+          elev:{a:ELEV||GACC,color:"#9b87f5",lab:ELEV?"m":"gps m",fmt:v=>v.toFixed(1)} };
+function drawTraceLayer(){ const {w,h}=trDim; const ch=CH[trCh]; const arr=ch.a;
+  const off=document.createElement("canvas"); const dpr=Math.min(2.5,window.devicePixelRatio||1);
+  off.width=w*dpr; off.height=h*dpr; const c=off.getContext("2d"); c.setTransform(dpr,0,0,dpr,0,0);
+  if(!arr){ trLayer=off; return; }
+  let mn=Infinity,mx=-Infinity; for(let i=0;i<N;i++){ if(arr[i]<mn)mn=arr[i]; if(arr[i]>mx)mx=arr[i]; }
+  if(ch.bipolar){ const m=Math.max(Math.abs(mn),Math.abs(mx))||1; mn=-m; mx=m; }
+  if(mx-mn<1e-6) mx=mn+1; const padT=14,padB=8;
+  const ty=v=> padT+(h-padT-padB)*(1-(v-mn)/(mx-mn));
+  const tx=i=> (i/(N-1))*w;
+  /* zero line for bipolar */
+  if(ch.bipolar){ c.strokeStyle="#1A2430"; c.lineWidth=1; c.beginPath(); c.moveTo(0,ty(0));c.lineTo(w,ty(0));c.stroke(); }
+  /* area */
+  c.beginPath(); c.moveTo(0,h); for(let i=0;i<N;i++) c.lineTo(tx(i),ty(arr[i])); c.lineTo(w,h); c.closePath();
+  const g=c.createLinearGradient(0,0,0,h); g.addColorStop(0,ch.color+"33"); g.addColorStop(1,ch.color+"00"); c.fillStyle=g; c.fill();
+  /* line */
+  c.strokeStyle=ch.color; c.lineWidth=1.6; c.beginPath();
+  for(let i=0;i<N;i++){ const xx=tx(i),yy=ty(arr[i]); i?c.lineTo(xx,yy):c.moveTo(xx,yy); } c.stroke();
+  /* labels */
+  c.fillStyle="#3A4A5C"; c.font="10px var(--mono)"; c.textAlign="left";
+  c.fillText(ch.fmt(mx)+" "+ch.lab, 8, 12); c.fillText(ch.fmt(mn), 8, h-4);
+  trLayer=off; trMeta={mn,mx,ty,tx,arr,color:ch.color,padT,padB,bipolar:ch.bipolar};
+}
+let trMeta=null;
+function resizeTrace(){ trDim=trR.size(); drawTraceLayer(); }
+document.querySelectorAll(".tab").forEach(tb=>tb.addEventListener("click",()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on")); tb.classList.add("on");
+  trCh=tb.dataset.ch; drawTraceLayer(); }));
+
+/* ------------------------------------------------------------------ SCRUBBER (loudness waveform) */
+const scCv=$("#scrubCanvas"); const scR=setup(scCv); let scDim, scLayer=null;
+const WAVE = LOUD || VIB || SP;   /* prefer engine loudness for the ribbon */
+const WAVE_IS_LOUD = !!LOUD;
+function drawScrubLayer(){ const {w,h}=scDim; const off=document.createElement("canvas");
+  const dpr=Math.min(2.5,window.devicePixelRatio||1); off.width=w*dpr; off.height=h*dpr;
+  const c=off.getContext("2d"); c.setTransform(dpr,0,0,dpr,0,0);
+  let mn=Infinity,mx=-Infinity; for(let i=0;i<N;i++){ const v=WAVE[i]; if(v<mn)mn=v; if(v>mx)mx=v; }
+  if(mx-mn<1e-6)mx=mn+1; const mid=h/2; const bars=Math.min(N, Math.max(60,Math.floor(w/2)));
+  for(let b=0;b<bars;b++){ const i0=Math.floor(b/bars*N), i1=Math.max(i0+1,Math.floor((b+1)/bars*N));
+    let pk=-Infinity; for(let i=i0;i<i1&&i<N;i++) if(WAVE[i]>pk)pk=WAVE[i];
+    const f=clamp((pk-mn)/(mx-mn),0,1); const bh=Math.max(1.5,f*(h*0.84));
+    const x=b/bars*w; c.fillStyle=`rgba(120,150,180,${0.25+0.4*f})`;
+    c.fillRect(x, mid-bh/2, Math.max(1,w/bars-0.7), bh); }
+  scLayer=off;
+}
+function resizeScrub(){ scDim=scR.size(); drawScrubLayer(); }
+
+/* ------------------------------------------------------------------ CLOCK / TRANSPORT */
+const audio=$("#audio"); let audioReady=false, usingAudio=false;
+let playing=false, virtT=0, rate=1, syncOffset=0, lastFrame=performance.now();
+function duration(){ return usingAudio && isFinite(audio.duration) ? audio.duration : DUR_TEL; }
+function clockTime(){ return usingAudio ? audio.currentTime : virtT; }
+function telTime(){ return clamp(clockTime()+syncOffset,0,DUR_TEL); }
+
+audio.addEventListener("canplay",()=>{ audioReady=true; usingAudio=true; $("#loadAudioBtn").style.display="none"; updateTotal(); });
+audio.addEventListener("error",()=>{ audioReady=false; usingAudio=false; });
+audio.addEventListener("ended",()=>{ setPlaying(false); });
+
+$("#loadAudioBtn").addEventListener("click",()=>$("#audioInput").click());
+$("#audioInput").addEventListener("change",e=>{ const f=e.target.files[0]; if(!f)return;
+  audio.src=URL.createObjectURL(f); audio.load(); });
+
+function updateTotal(){ $("#tTot").textContent=fmtClock(duration()); }
+function setPlaying(p){ playing=p; $("#playIcon").innerHTML = p
+  ? '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>' : '<path d="M8 5v14l11-7z"/>';
+  if(usingAudio){ if(p){ audio.playbackRate=rate; audio.play().catch(()=>{ usingAudio=false; }); } else audio.pause(); }
+  lastFrame=performance.now();
+}
+function togglePlay(){ setPlaying(!playing); }
+function seekTo(t){ t=clamp(t,0,duration()); if(usingAudio){ audio.currentTime=t; } else virtT=t; }
+
+$("#playBtn").addEventListener("click",togglePlay);
+$("#rateSeg").querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{
+  rate=parseFloat(b.dataset.r); $("#rateSeg").querySelectorAll("button").forEach(x=>x.classList.remove("on")); b.classList.add("on");
+  if(usingAudio&&playing) audio.playbackRate=rate; }));
+$("#syncMinus").addEventListener("click",()=>{ syncOffset=Math.round((syncOffset-0.1)*10)/10; showSync(); });
+$("#syncPlus").addEventListener("click",()=>{ syncOffset=Math.round((syncOffset+0.1)*10)/10; showSync(); });
+function showSync(){ $("#syncVal").textContent="sync "+(syncOffset>=0?"+":"")+syncOffset.toFixed(1)+"s"; }
+
+/* scrub interaction */
+const scrub=$("#scrub"); let scrubbing=false;
+function scrubFromEvent(e){ const r=scrub.getBoundingClientRect();
+  const cx=(e.touches?e.touches[0].clientX:e.clientX)-r.left; seekTo(clamp(cx/r.width,0,1)*duration()); }
+scrub.addEventListener("pointerdown",e=>{ scrubbing=true; scrub.setPointerCapture(e.pointerId); scrubFromEvent(e); });
+scrub.addEventListener("pointermove",e=>{ if(scrubbing) scrubFromEvent(e); });
+scrub.addEventListener("pointerup",()=>{ scrubbing=false; });
+scrub.addEventListener("keydown",e=>{ if(e.key==="ArrowLeft"){seekTo(clockTime()-2);e.preventDefault();}
+  if(e.key==="ArrowRight"){seekTo(clockTime()+2);e.preventDefault();} });
+
+document.addEventListener("keydown",e=>{ if(e.target.tagName==="INPUT")return;
+  if(e.code==="Space"){ togglePlay(); e.preventDefault(); }
+  else if(e.code==="ArrowLeft"){ seekTo(clockTime()-2); }
+  else if(e.code==="ArrowRight"){ seekTo(clockTime()+2); } });
+
+/* ------------------------------------------------------------------ LAPS */
+function lapInfo(t){ const laps=M.laps; let best=null;
+  for(const l of laps){ if(best==null||l.time<best) best=l.time; }
+  let cur=0, no=0, curStart=laps.length?laps[0].start:0, last=null;
+  if(!laps.length){ return {no:"–", cur:t, last:null, best:null}; }
+  for(let i=0;i<laps.length;i++){ if(t>=laps[i].start){ no=i+1; curStart=laps[i].end; last=laps[i].time; } }
+  if(t<laps[0].start){ no=0; curStart=0; }
+  cur=t-curStart;
+  return {no:no||"–", cur:Math.max(0,cur), last:last, best:best};
+}
+
+/* ------------------------------------------------------------------ RENDER LOOP */
+function render(){
+  const now=performance.now(); const dtr=(now-lastFrame)/1000; lastFrame=now;
+  if(playing && !usingAudio){ virtT=clamp(virtT+dtr*rate, 0, duration()); if(virtT>=duration()) setPlaying(false); }
+
+  const t = telTime();
+  const i = idxAt(t);
+  const spd = sampleLerp(SP,t);
+  const gl = sampleLerp(GLAT,t), go = sampleLerp(GLON,t);
+  const bank = sampleLerp(BANK,t);
+
+  /* speed */
+  $("#speedVal").textContent = Math.round(spd);
+  $("#distVal").textContent = (sampleLerp(DIST,t)/1000).toFixed(2);
+  drawArc(spd);
+
+  /* g tiles */
+  $("#gLon").textContent = (go>=0?"+":"")+go.toFixed(2);
+  $("#gLon").style.color = go>0.05? "#27E0A0" : go<-0.05? "#FF6B6B" : "#E8EEF5";
+  $("#gLonLab").textContent = go>0.08?"accel": go<-0.08?"brake":"coast";
+  $("#gLat").textContent = Math.abs(gl).toFixed(2);
+  $("#gLatLab").textContent = gl>0.06?"right turn": gl<-0.06?"left turn":"straight";
+
+  /* aux */
+  let auxv="—";
+  if(M.hasLoudness) auxv=sampleLerp(LOUD,t).toFixed(0);
+  else if(M.hasVibration) auxv=(sampleLerp(VIB,t)*100).toFixed(0);
+  else auxv=sampleLerp(GACC,t).toFixed(0);
+  $("#auxVal").textContent=auxv;
+
+  /* gg + horizon */
+  drawGG(gl,go);
+  drawHorizon(bank);
+  $("#bankVal").textContent = (bank>=0?"":"")+bank.toFixed(0)+"°";
+
+  /* heading + elev */
+  const hd=sampleLerp(HEAD,t);
+  const dirs=["N","NE","E","SE","S","SW","W","NW"];
+  $("#hdgVal").textContent = Math.round(hd)+"° "+dirs[Math.round(hd/45)%8];
+  if(M.hasElevation){ $("#elevVal").textContent=sampleLerp(ELEV,t).toFixed(1)+" m"; }
+  else { $("#elevVal").textContent=sampleLerp(GACC,t).toFixed(0)+" m"; }
+
+  /* gps quality bars */
+  const acc=sampleLerp(GACC,t); const q=clamp(Math.round(5-(acc-3)/4),0,5);
+  const qb=$("#qbar").children; for(let k=0;k<5;k++){ qb[k].style.background = k<q ? (q>=4?"#27E0A0":q>=2?"#FFC400":"#FF4D4D") : "#24303E"; }
+
+  /* laps */
+  const li=lapInfo(t);
+  $("#lapNo").textContent=li.no;
+  $("#lapCur").textContent=fmtLap(li.cur);
+  $("#lapLast").textContent=fmtLap(li.last);
+  $("#lapBest").textContent=fmtLap(li.best);
+
+  /* MAP: blit cached silhouette + position dot (hidden when off-track) */
+  { const ctx=mapR.ctx; const {w,h}=mapDim; ctx.clearRect(0,0,w,h);
+    if(lineLayer) ctx.drawImage(lineLayer,0,0,w,h);
+    const onTrack = DOTX && DOTX[i]!=null && DOTY[i]!=null;
+    if(onTrack){
+      /* short fading trail along the silhouette */
+      for(let k=16;k>=1;k--){ const ii=clamp(i-k*2,0,N-1);
+        if(DOTX[ii]==null) continue; const a=(1-k/16)*0.4;
+        ctx.fillStyle=`rgba(255,255,255,${a*0.22})`;
+        ctx.beginPath(); ctx.arc(wx(DOTX[ii]),wy(DOTY[ii]),2.0,0,7); ctx.fill(); }
+      const px=wx(DOTX[i]),py=wy(DOTY[i]);
+      ctx.shadowColor="rgba(255,122,26,.9)"; ctx.shadowBlur=18;
+      ctx.fillStyle="#FF9A45"; ctx.beginPath(); ctx.arc(px,py,7,0,7); ctx.fill(); ctx.shadowBlur=0;
+      ctx.fillStyle="#fff"; ctx.beginPath(); ctx.arc(px,py,2.8,0,7); ctx.fill();
+    } else {
+      /* off-track: kart is in the pits / parking lot / paused recording */
+      ctx.fillStyle="rgba(138,154,173,0.14)"; ctx.strokeStyle="rgba(138,154,173,0.5)"; ctx.lineWidth=1;
+      const bw=88,bh=22,bx=w/2-bw/2,by=h-30;
+      ctx.beginPath();
+      if(ctx.roundRect) ctx.roundRect(bx,by,bw,bh,11); else ctx.rect(bx,by,bw,bh);
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle="#8A9AAD"; ctx.font="600 11px var(--sans)"; ctx.textAlign="center"; ctx.textBaseline="middle";
+      ctx.fillText("OFF TRACK", w/2, by+bh/2); ctx.textAlign="left"; ctx.textBaseline="alphabetic";
+    }
+  }
+
+  /* TRACE: blit + playhead + dot */
+  { const ctx=trR.ctx; const {w,h}=trDim; ctx.clearRect(0,0,w,h);
+    if(trLayer) ctx.drawImage(trLayer,0,0,w,h);
+    if(trMeta){ const xx=(i/(N-1))*w; ctx.strokeStyle="rgba(255,122,26,.7)"; ctx.lineWidth=1.4;
+      ctx.beginPath(); ctx.moveTo(xx,0); ctx.lineTo(xx,h); ctx.stroke();
+      const yy=trMeta.ty(trMeta.arr[i]); ctx.fillStyle=trMeta.color;
+      ctx.beginPath(); ctx.arc(xx,yy,3.2,0,7); ctx.fill(); }
+  }
+
+  /* SCRUB: blit + playhead */
+  { const ctx=scR.ctx; const {w,h}=scDim; ctx.clearRect(0,0,w,h);
+    if(scLayer) ctx.drawImage(scLayer,0,0,w,h);
+    const frac=clamp(clockTime()/duration(),0,1); const xx=frac*w;
+    ctx.fillStyle="rgba(255,122,26,0.10)"; ctx.fillRect(0,0,xx,h);
+    ctx.strokeStyle="#FF7A1A"; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(xx,0); ctx.lineTo(xx,h); ctx.stroke();
+    ctx.fillStyle="#FF9A45"; ctx.beginPath(); ctx.arc(xx,h/2,4,0,7); ctx.fill();
+  }
+
+  $("#tCur").textContent=fmtClock(clockTime());
+
+  requestAnimationFrame(render);
+}
+
+/* ------------------------------------------------------------------ INIT + RESIZE */
+function resizeAll(){ resizeMap(); arcDim=arcR.size(); ggDim=ggR.size(); hzDim=hzR.size();
+  resizeTrace(); resizeScrub(); }
+let rzTimer; window.addEventListener("resize",()=>{ clearTimeout(rzTimer); rzTimer=setTimeout(resizeAll,120); });
+
+updateTotal(); showSync();
+resizeAll();
+requestAnimationFrame(render);
+</script>
+</body>
+</html>

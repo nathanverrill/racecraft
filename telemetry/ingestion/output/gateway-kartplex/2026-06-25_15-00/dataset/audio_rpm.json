@@ -1,0 +1,23 @@
+{
+  "method": "spectral-whitened harmonic-sum firing-band track, drift-corrected via sync.json",
+  "rpm_per_hz": 120.0,
+  "firing_band_hz": [
+    25.0,
+    60.0
+  ],
+  "rpm_est_median_driving": 5156.25,
+  "rpm_est_p95": 6867.721315814849,
+  "rpm_est_max": 7031.25,
+  "single_speed_regression": {
+    "f_vs_speed_r2": 0.07851201851057255,
+    "slope": -0.7085404190118487,
+    "intercept": 52.72419131335741,
+    "n": 5212
+  },
+  "low_confidence": true,
+  "validated": false,
+  "data_quality_note": "AirPod voice-processing thins the engine fundamental and a static ~160 Hz artifact dominates; tone-vs-speed R^2 is low -> RPM is NOT reliably recoverable from this audio. Best-effort track only; do NOT use as truth.",
+  "drift_corrected": true,
+  "sync_a": 1.0021636160217,
+  "sync_b": -0.967248126378853
+}

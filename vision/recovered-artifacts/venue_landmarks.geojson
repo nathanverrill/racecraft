@@ -1,0 +1,215 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Venue center",
+        "marker-color": "#888888",
+        "approximate": true,
+        "note": "APPROXIMATE seed position - snap to GPS track + validate; not exact."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.135464,
+          38.6486624
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Front of paddock / pit",
+        "marker-color": "#1f78b4",
+        "approximate": true,
+        "note": "APPROXIMATE seed position - snap to GPS track + validate; not exact."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.13557806036687,
+          38.648656619119365
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Pit EXIT onto track",
+        "marker-color": "#33a02c",
+        "approximate": true,
+        "note": "APPROXIMATE seed position - snap to GPS track + validate; not exact."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.13503748291448,
+          38.648065935814756
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Pit ENTRANCE from track",
+        "marker-color": "#e31a1c",
+        "approximate": true,
+        "note": "APPROXIMATE seed position - snap to GPS track + validate; not exact."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.13451136518044,
+          38.64936856149834
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Timing tower (S/F top)",
+        "marker-color": "#ff7f00",
+        "approximate": true,
+        "note": "APPROXIMATE seed position - snap to GPS track + validate; not exact."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.13516231798133,
+          38.64866604562608
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "S/F line bottom",
+        "marker-color": "#ff7f00",
+        "approximate": true,
+        "note": "APPROXIMATE seed position - snap to GPS track + validate; not exact."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.13512208484727,
+          38.64859377570983
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "S/F GATE line (tower->bottom, perpendicular to track)",
+        "stroke": "#ff7f00",
+        "stroke-width": 4,
+        "approximate": true,
+        "note": "ROUGH SKETCH of route shape/side only - few vertices, not the driven line, not to scale."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -90.13516231798133,
+            38.64866604562608
+          ],
+          [
+            -90.13512208484727,
+            38.64859377570983
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "approx enter to track from pit",
+        "stroke": "#33a02c",
+        "stroke-width": 3,
+        "approximate": true,
+        "note": "ROUGH SKETCH of route shape/side only - few vertices, not the driven line, not to scale."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -90.1356171,
+            38.6486443
+          ],
+          [
+            -90.1356771,
+            38.6486034
+          ],
+          [
+            -90.1356676,
+            38.6485039
+          ],
+          [
+            -90.1355974,
+            38.6483877
+          ],
+          [
+            -90.1355244,
+            38.6483329
+          ],
+          [
+            -90.1354402,
+            38.6482824
+          ],
+          [
+            -90.1353026,
+            38.6481991
+          ],
+          [
+            -90.135239,
+            38.6481698
+          ],
+          [
+            -90.1351392,
+            38.6481156
+          ],
+          [
+            -90.1350264,
+            38.6480681
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "approx return to pit from track",
+        "stroke": "#e31a1c",
+        "stroke-width": 3,
+        "approximate": true,
+        "note": "ROUGH SKETCH of route shape/side only - few vertices, not the driven line, not to scale."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -90.1345362,
+            38.6494233
+          ],
+          [
+            -90.134649,
+            38.6499281
+          ],
+          [
+            -90.1351913,
+            38.6498299
+          ],
+          [
+            -90.1348442,
+            38.6488745
+          ],
+          [
+            -90.1354125,
+            38.6487152
+          ]
+        ]
+      }
+    }
+  ],
+  "_README": "APPROXIMATE / ROUGH SKETCH ONLY. These points and paths were hand-placed on Google Maps satellite imagery by the user to convey LAYOUT and ROUTING, not precise geometry. They are NOT survey data and NOT the actual driven line. DO NOT treat any coordinate, vertex, path shape, or length as exact. Google imagery coords also differ from the phone GPS by several meters. USE ONLY AS SEEDS: snap each landmark to the nearest point on the real phone GPS track and validate by data (gate via lap-time RMSE; pit exit/entrance via speed/heading). The two LineStrings are coarse few-vertex sketches of the pit-lane ROUTE (which side it loops), NOT a smooth or accurate path. Do not be literal."
+}

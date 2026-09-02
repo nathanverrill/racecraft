@@ -1,0 +1,166 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kart Telemetry — Sessions</title>
+<style>
+:root{--bg:#0b0e13;--card:#151a22;--line:#232b36;--txt:#e7edf5;--dim:#8b97a8;
+--accent:#ff5c39;--good:#31d67a;}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);
+font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+header{padding:34px 28px 10px;border-bottom:1px solid var(--line)}
+h1{margin:0;font-size:26px;letter-spacing:.3px}
+.sub{color:var(--dim);margin-top:6px;font-size:13px}
+main{padding:24px 28px 60px;max-width:1200px;margin:0 auto}
+.venue{margin-top:30px}
+.venue h2{font-size:18px;border-left:3px solid var(--accent);padding-left:10px;margin:0 0 14px}
+.dir{color:var(--dim);font-size:12px;font-weight:400;margin-left:8px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 16px 14px}
+.card.notel{opacity:.82}
+.chead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:12px}
+.event{font-weight:650;font-size:15px}
+.when{color:var(--dim);font-size:11.5px;text-align:right}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.metric{background:#0f141b;border:1px solid var(--line);border-radius:8px;padding:8px 9px}
+.metric.primary{border-color:#2c6b45}
+.metric.lead{border-color:var(--accent)}
+.mlabel{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.4px}
+.mval{font-size:18px;font-weight:700;margin-top:3px}
+.metric.primary .mval{color:var(--good)}
+.msub{font-size:9.5px;color:var(--dim);margin-top:2px;min-height:11px}
+.links{display:flex;flex-wrap:wrap;gap:6px}
+.btn{display:inline-block;background:#1d2530;border:1px solid var(--line);color:var(--txt);
+text-decoration:none;padding:5px 10px;border-radius:6px;font-size:12px}
+.btn:hover{border-color:var(--accent)}
+.btn.hub{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.tag.timing{color:var(--dim);font-size:12px;font-style:italic}
+</style></head><body>
+<header><h1>Kart Telemetry — Sessions</h1>
+<div class="sub">Pick a session to open its dashboards. Headline metric: consistency (lap-time CV), then best lap, then average lap.</div>
+</header><main>
+    <section class="venue">
+      <h2>Gateway Kartplex <span class="dir">Standard layout</span></h2>
+      <div class="cards">
+    <div class="card tel">
+      <div class="chead">
+        <div class="event">10-minute A&D</div>
+        <div class="when">2026-06-25 14:40:00  ·  P1/55340</div>
+      </div>
+      <div class="metrics">
+        <div class="metric primary"><div class="mlabel">Consistency (CV)</div>
+          <div class="mval">1.4%</div>
+          <div class="msub">telemetry (clean laps) · 9 laps</div></div>
+        <div class="metric lead"><div class="mlabel">Best lap</div>
+          <div class="mval">40.519s</div></div>
+        <div class="metric "><div class="mlabel">Avg lap</div>
+          <div class="mval">43.449s</div>
+          <div class="msub"></div></div>
+        <div class="metric"><div class="mlabel">Laps</div>
+          <div class="mval">14</div></div>
+      </div>
+      <div class="links"><a class="btn hub" href="gateway-kartplex/2026-06-25_14-40/dataset/render/landing.html">Open ▸</a><a class="btn" href="gateway-kartplex/2026-06-25_14-40/dataset/render/onboard.html">Onboard</a> <a class="btn" href="gateway-kartplex/2026-06-25_14-40/dataset/render/coaching.html">Coaching</a> <a class="btn" href="gateway-kartplex/2026-06-25_14-40/dataset/render/replay.html">Replay</a> <a class="btn" href="gateway-kartplex/2026-06-25_14-40/dataset/render/ghost.html">Ghost</a> <a class="btn" href="gateway-kartplex/2026-06-25_14-40/dataset/render/cockpit.html">Cockpit</a> <a class="btn" href="gateway-kartplex/2026-06-25_14-40/dataset/render/sector1.html">Sector 1</a></div>
+    </div>
+
+    <div class="card tel">
+      <div class="chead">
+        <div class="event">10 min A&D</div>
+        <div class="when">2026-06-25 15:00:00  ·  P1/55340</div>
+      </div>
+      <div class="metrics">
+        <div class="metric primary"><div class="mlabel">Consistency (CV)</div>
+          <div class="mval">1.0%</div>
+          <div class="msub">telemetry (clean laps) · 11 laps</div></div>
+        <div class="metric lead"><div class="mlabel">Best lap</div>
+          <div class="mval">41.164s</div></div>
+        <div class="metric "><div class="mlabel">Avg lap</div>
+          <div class="mval">43.027s</div>
+          <div class="msub"></div></div>
+        <div class="metric"><div class="mlabel">Laps</div>
+          <div class="mval">13</div></div>
+      </div>
+      <div class="links"><a class="btn hub" href="gateway-kartplex/2026-06-25_15-00/dataset/render/landing.html">Open ▸</a><a class="btn" href="gateway-kartplex/2026-06-25_15-00/dataset/render/onboard.html">Onboard</a> <a class="btn" href="gateway-kartplex/2026-06-25_15-00/dataset/render/coaching.html">Coaching</a> <a class="btn" href="gateway-kartplex/2026-06-25_15-00/dataset/render/replay.html">Replay</a> <a class="btn" href="gateway-kartplex/2026-06-25_15-00/dataset/render/ghost.html">Ghost</a> <a class="btn" href="gateway-kartplex/2026-06-25_15-00/dataset/render/cockpit.html">Cockpit</a> <a class="btn" href="gateway-kartplex/2026-06-25_15-00/dataset/render/sector1.html">Sector 1</a></div>
+    </div></div>
+    </section>
+
+    <section class="venue">
+      <h2>Gateway Kartplex Reversed <span class="dir">Reverse layout</span></h2>
+      <div class="cards">
+    <div class="card tel">
+      <div class="chead">
+        <div class="event">10 min Arrive & Drive Practice</div>
+        <div class="when">2026-07-01 15:45:00 · Reverse  ·  P11/11</div>
+      </div>
+      <div class="metrics">
+        <div class="metric primary"><div class="mlabel">Consistency (CV)</div>
+          <div class="mval">1.4%</div>
+          <div class="msub">telemetry (clean laps) · 12 laps</div></div>
+        <div class="metric lead"><div class="mlabel">Best lap</div>
+          <div class="mval">43.081s</div></div>
+        <div class="metric "><div class="mlabel">Avg lap</div>
+          <div class="mval">44.991s</div>
+          <div class="msub"></div></div>
+        <div class="metric"><div class="mlabel">Laps</div>
+          <div class="mval">14</div></div>
+      </div>
+      <div class="links"><a class="btn hub" href="gateway-kartplex-reversed/2026-07-01_15-45/dataset/render/landing.html">Open ▸</a><a class="btn" href="gateway-kartplex-reversed/2026-07-01_15-45/dataset/render/onboard.html">Onboard</a> <a class="btn" href="gateway-kartplex-reversed/2026-07-01_15-45/dataset/render/coaching.html">Coaching</a> <a class="btn" href="gateway-kartplex-reversed/2026-07-01_15-45/dataset/render/replay.html">Replay</a> <a class="btn" href="gateway-kartplex-reversed/2026-07-01_15-45/dataset/render/ghost.html">Ghost</a> <a class="btn" href="gateway-kartplex-reversed/2026-07-01_15-45/dataset/render/cockpit.html">Cockpit</a> <a class="btn" href="gateway-kartplex-reversed/2026-07-01_15-45/dataset/render/sector1.html">Sector 1</a></div>
+    </div>
+
+    <div class="card notel">
+      <div class="chead">
+        <div class="event">iDrive Qualifying</div>
+        <div class="when">2026-07-01 18:40:00 · Reverse  ·  P9/9</div>
+      </div>
+      <div class="metrics">
+        <div class="metric primary"><div class="mlabel">Consistency (CV)</div>
+          <div class="mval">1.7%</div>
+          <div class="msub">sheet · 7 laps</div></div>
+        <div class="metric lead"><div class="mlabel">Best lap</div>
+          <div class="mval">42.654s</div></div>
+        <div class="metric "><div class="mlabel">Avg lap</div>
+          <div class="mval">43.524s</div>
+          <div class="msub"></div></div>
+        <div class="metric"><div class="mlabel">Laps</div>
+          <div class="mval">7</div></div>
+      </div>
+      <div class="links"><span class="tag timing">Timing only — no telemetry</span></div>
+    </div>
+
+    <div class="card notel">
+      <div class="chead">
+        <div class="event">iDrive 10 Lap Final</div>
+        <div class="when">2026-07-01 18:45:00 · Reverse  ·  P9/9</div>
+      </div>
+      <div class="metrics">
+        <div class="metric primary"><div class="mlabel">Consistency (CV)</div>
+          <div class="mval">6.3%</div>
+          <div class="msub">sheet · 10 laps</div></div>
+        <div class="metric "><div class="mlabel">Best lap</div>
+          <div class="mval">42.008s</div></div>
+        <div class="metric lead"><div class="mlabel">Avg lap</div>
+          <div class="mval">44.066s</div>
+          <div class="msub">ranking metric</div></div>
+        <div class="metric"><div class="mlabel">Laps</div>
+          <div class="mval">10</div></div>
+      </div>
+      <div class="links"><span class="tag timing">Timing only — no telemetry</span></div>
+    </div>
+
+    <div class="card tel">
+      <div class="chead">
+        <div class="event">iDrive 10 Lap Final</div>
+        <div class="when">2026-07-01 20:35:00 · Reverse  ·  P9/9</div>
+      </div>
+      <div class="metrics">
+        <div class="metric primary"><div class="mlabel">Consistency (CV)</div>
+          <div class="mval">1.4%</div>
+          <div class="msub">telemetry (clean laps) · 7 laps</div></div>
+        <div class="metric "><div class="mlabel">Best lap</div>
+          <div class="mval">41.928s</div></div>
+        <div class="metric lead"><div class="mlabel">Avg lap</div>
+          <div class="mval">44.012s</div>
+          <div class="msub">ranking metric</div></div>
+        <div class="metric"><div class="mlabel">Laps</div>
+          <div class="mval">9</div></div>
+      </div>
+      <div class="links"><a class="btn hub" href="gateway-kartplex-reversed/2026-07-01_20-35/dataset/render/landing.html">Open ▸</a><a class="btn" href="gateway-kartplex-reversed/2026-07-01_20-35/dataset/render/onboard.html">Onboard</a> <a class="btn" href="gateway-kartplex-reversed/2026-07-01_20-35/dataset/render/coaching.html">Coaching</a> <a class="btn" href="gateway-kartplex-reversed/2026-07-01_20-35/dataset/render/replay.html">Replay</a> <a class="btn" href="gateway-kartplex-reversed/2026-07-01_20-35/dataset/render/ghost.html">Ghost</a> <a class="btn" href="gateway-kartplex-reversed/2026-07-01_20-35/dataset/render/cockpit.html">Cockpit</a> <a class="btn" href="gateway-kartplex-reversed/2026-07-01_20-35/dataset/render/sector1.html">Sector 1</a></div>
+    </div></div>
+    </section></main></body></html>

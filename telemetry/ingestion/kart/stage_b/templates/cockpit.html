@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Cockpit · Gateway Kartplex (sim replay)</title>
+<style>
+  :root{--white:#eaf2fa;--cyan:#00e5ff;--dim:#9fb0c0}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:#05060a;overflow:hidden;color:var(--white);
+    font-family:"SF Mono",ui-monospace,"Roboto Mono",Menlo,monospace}
+  #scene{position:fixed;inset:0;width:100%;height:100%;display:block}
+  .ov{position:absolute;pointer-events:none}
+  #spd{right:6%;bottom:30%;text-align:right}
+  #spd .v{font-size:104px;font-weight:800;line-height:.85;font-variant-numeric:tabular-nums;
+    text-shadow:0 4px 50px rgba(0,229,255,.4)}
+  #spd .u{color:var(--cyan);font-size:20px;letter-spacing:8px}
+  #info{left:5%;top:6%}
+  #info .t{font-size:22px;font-weight:800;letter-spacing:1px;text-shadow:0 2px 18px #000}
+  #info .s{color:var(--cyan);font-size:13px;margin-top:5px;letter-spacing:2px}
+  #corner{left:50%;top:9%;transform:translateX(-50%);font-size:34px;font-weight:800;
+    color:var(--cyan);letter-spacing:3px;opacity:0;transition:opacity .25s;text-shadow:0 2px 30px rgba(0,229,255,.6)}
+  #lt{left:5%;bottom:6%}#lt .l{font-size:11px;color:var(--dim);letter-spacing:2px}
+  #lt .v{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}
+  #start{position:fixed;inset:0;display:flex;flex-direction:column;gap:16px;align-items:center;
+    justify-content:center;background:radial-gradient(circle at 50% 35%,#1a1326,#05060a);z-index:9;cursor:pointer}
+  #start .b{font-size:34px;font-weight:800;letter-spacing:2px}
+  #start .g{border:1px solid var(--cyan);color:var(--cyan);border-radius:30px;padding:13px 32px;letter-spacing:2px}
+  #start .h{color:var(--dim);font-size:13px}
+  #sponsors{position:absolute;left:0;right:0;bottom:14px;display:flex;justify-content:center;gap:20px;opacity:.4}
+  #sponsors .sp{font-weight:800;font-size:11px;letter-spacing:2px;color:#9fb0c0;text-transform:uppercase}
+</style>
+</head>
+<body>
+<canvas id="scene"></canvas>
+<div class="ov" id="info"><div class="t">GATEWAY KARTPLEX · T1</div><div class="s" id="sub">SIM REPLAY · KART #19</div></div>
+<div class="ov" id="corner">TURN 1</div>
+<div class="ov" id="spd"><div class="v" id="spdv">0</div><div class="u">MPH</div></div>
+<div class="ov" id="lt"><div class="l">LAP</div><div class="v" id="ltv">0.000</div></div>
+<div class="ov" id="sponsors">
+  <span class="sp" style="color:#eaf2fa"> Apple</span><span class="sp" style="color:#ff8000">McLaren</span>
+  <span class="sp" style="color:#d9a441">✳ Claude</span><span class="sp">Sodi</span><span class="sp">Honda</span>
+</div>
+<div id="start"><div class="b">🏁 SIM REPLAY · BEST LAP</div>
+  <div class="h">first-person · steering from your data · engine audio</div><div class="g">▶ DRIVE</div></div>
+<script>
+const C={cyan:"#00e5ff",white:"#eaf2fa"};
+const $=id=>document.getElementById(id);
+let D,S,N,W,H,ctx,cv,aud,playing=false,t0,t1,bestLap,vmax,startWall=0,apexes;
+async function boot(){
+  D=await(await fetch("render.json")).json();S=D.series;N=S.t.length;vmax=D.max_speed_mph;apexes=D.apexes;
+  bestLap=D.analytics.reference_lap;
+  const idx=S.lap.map((l,i)=>l===bestLap?i:-1).filter(i=>i>=0);
+  t0=S.t[idx[0]];t1=S.t[idx[idx.length-1]];
+  $("sub").textContent=`SIM REPLAY · KART #19 · LAP ${bestLap} · ${(D.laps.find(l=>l.lap===bestLap)?.lap_time||0).toFixed(3)}s`;
+  aud=new Audio("session.wav");aud.preload="auto";
+  cv=$("scene");ctx=cv.getContext("2d");size();window.onresize=size;
+  $("start").onclick=()=>{$("start").style.display="none";aud.currentTime=t0;aud.play();playing=true;startWall=performance.now();loop();};
+  window.__ready=true;
+  window.__seekFrame=(t)=>{drawAt(t0+(t||0));};   // lap-relative for video
+  drawAt(t0);
+}
+function size(){cv.width=innerWidth*devicePixelRatio;cv.height=innerHeight*devicePixelRatio;W=cv.width;H=cv.height;}
+function idxAtT(t){let lo=0,hi=N-1;while(lo<hi){const m=(lo+hi)>>1;if(S.t[m]<t)lo=m+1;else hi=m;}return lo;}
+function loop(){if(playing){const t=aud.currentTime;if(t>=t1){aud.pause();playing=false;}drawAt(t);}
+  if(playing)requestAnimationFrame(loop);}
+
+function drawAt(t){
+  t=Math.max(t0,Math.min(t1,t));const i=idxAtT(t);
+  const steer=S.steer[i], spd=S.speed_mph[i], lapT=t-t0;
+  const horizon=H*0.42;
+  // ---- SKY: sunset gradient ----
+  const sky=ctx.createLinearGradient(0,0,0,horizon);
+  sky.addColorStop(0,"#241a3a");sky.addColorStop(.45,"#7a3b6e");
+  sky.addColorStop(.75,"#e0633f");sky.addColorStop(1,"#ffb24d");
+  ctx.fillStyle=sky;ctx.fillRect(0,0,W,horizon);
+  // sun
+  const sunX=W*0.5 - steer*W*0.12, sunY=horizon-H*0.07;
+  const sg=ctx.createRadialGradient(sunX,sunY,0,sunX,sunY,H*0.16);
+  sg.addColorStop(0,"rgba(255,240,200,.95)");sg.addColorStop(.5,"rgba(255,170,90,.7)");sg.addColorStop(1,"rgba(255,120,60,0)");
+  ctx.fillStyle=sg;ctx.beginPath();ctx.arc(sunX,sunY,H*0.16,0,7);ctx.fill();
+  // parallax skyline silhouette (grandstands/trees), shifts with steer
+  ctx.fillStyle="#1c1430";const off=-steer*W*0.05;
+  for(let k=-1;k<14;k++){const bw=W*0.09,bx=off+k*bw,bh=H*(0.04+0.03*((k*37)%5)/5);
+    ctx.fillRect(bx,horizon-bh,bw*0.92,bh);}
+  // grandstand band
+  ctx.fillStyle="#150f24";ctx.fillRect(0,horizon-H*0.02,W,H*0.02);
+
+  // ---- GROUND ----
+  ctx.fillStyle="#0c1016";ctx.fillRect(0,horizon,W,H-horizon);
+  // perspective track ribbon, curving by steer; vanishing point shifts with steer
+  const vpx=W*0.5 - steer*W*0.30, vpy=horizon;
+  const baseHalf=W*0.46, topHalf=W*0.03;
+  // road
+  ctx.beginPath();
+  ctx.moveTo(W*0.5-baseHalf,H);ctx.lineTo(vpx-topHalf,vpy);
+  ctx.lineTo(vpx+topHalf,vpy);ctx.lineTo(W*0.5+baseHalf,H);ctx.closePath();
+  const road=ctx.createLinearGradient(0,horizon,0,H);
+  road.addColorStop(0,"#23282f");road.addColorStop(1,"#333a44");ctx.fillStyle=road;ctx.fill();
+  // edge kerbs
+  for(const sgn of [-1,1]){ctx.strokeStyle="#d23b3b";ctx.lineWidth=Math.max(3,W*0.006);
+    ctx.beginPath();ctx.moveTo(W*0.5+sgn*baseHalf,H);ctx.lineTo(vpx+sgn*topHalf,vpy);ctx.stroke();}
+  // dashed center line scrolling with speed
+  const scroll=(lapT*spd*0.6)%1;
+  ctx.strokeStyle="rgba(255,255,255,.55)";ctx.lineWidth=Math.max(2,W*0.004);ctx.setLineDash([H*0.04,H*0.05]);
+  ctx.lineDashOffset=-scroll*H*0.09;
+  ctx.beginPath();ctx.moveTo(W*0.5,H);ctx.lineTo(vpx,vpy);ctx.stroke();ctx.setLineDash([]);
+  // speed lines
+  const sl=Math.min(1,spd/vmax);ctx.strokeStyle=`rgba(0,229,255,${0.10+0.25*sl})`;
+  for(let k=0;k<18*sl;k++){const ang=Math.random()*7;const r0=W*0.2,r1=W*0.5;
+    ctx.beginPath();ctx.moveTo(vpx+Math.cos(ang)*r0,vpy+Math.sin(ang)*r0*0.5);
+    ctx.lineTo(vpx+Math.cos(ang)*r1,vpy+Math.sin(ang)*r1*0.5);ctx.lineWidth=1.4*devicePixelRatio;ctx.stroke();}
+
+  // ---- COCKPIT: hands + steering wheel ----
+  drawWheel(steer);
+
+  // HUD
+  $("spdv").textContent=Math.round(spd);
+  $("ltv").textContent=lapT.toFixed(3);
+  // corner callout by proximity
+  const cx=S.x[i],cy=S.y[i];let nd=1e9,nc=null;
+  apexes.forEach(ap=>{const d=(ap.x-cx)**2+(ap.y-cy)**2;if(d<nd){nd=d;nc=ap;}});
+  if(nc&&Math.sqrt(nd)<0.045){$("corner").style.opacity=1;$("corner").textContent="TURN "+nc.num;}
+  else $("corner").style.opacity=0;
+}
+
+function drawWheel(steer){
+  const cx=W*0.5, cy=H*1.06, R=W*0.27;       // wheel center below screen, big rim
+  const ang=steer*Math.PI*0.62;              // up to ~112deg lock
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(ang);
+  // rim
+  ctx.strokeStyle="#0b0d11";ctx.lineWidth=W*0.045;ctx.beginPath();ctx.arc(0,0,R,Math.PI*1.04,Math.PI*1.96);ctx.stroke();
+  ctx.strokeStyle="#1b2027";ctx.lineWidth=W*0.022;ctx.beginPath();ctx.arc(0,0,R,Math.PI*1.04,Math.PI*1.96);ctx.stroke();
+  // spokes
+  ctx.strokeStyle="#15191f";ctx.lineWidth=W*0.03;
+  for(const a of [Math.PI*1.18,Math.PI*1.82,Math.PI*1.5]){ctx.beginPath();ctx.moveTo(0,-R*0.12);
+    ctx.lineTo(Math.cos(a)*R*0.92,Math.sin(a)*R*0.92);ctx.stroke();}
+  // hub + accent
+  ctx.fillStyle="#0e1218";ctx.beginPath();ctx.arc(0,0,R*0.16,0,7);ctx.fill();
+  ctx.fillStyle=C.cyan;ctx.fillRect(-R*0.02,-R*0.16,R*0.04,R*0.06);   // top marker
+  // ---- HANDS at 9 & 3 (rotate with rim) ----
+  for(const side of [-1,1]){
+    const hx=Math.cos(side>0?0:Math.PI)*R, hy=0;
+    ctx.save();ctx.translate(hx,hy);
+    // glove
+    ctx.fillStyle="#1d2330";ctx.strokeStyle="#0a0c10";ctx.lineWidth=W*0.004;
+    roundRect(-W*0.05,-W*0.055,W*0.10,W*0.12,W*0.02);ctx.fill();ctx.stroke();
+    // fingers wrapping rim
+    ctx.fillStyle="#262d3b";
+    for(let f=0;f<4;f++){roundRect(-W*0.045+f*W*0.024,-W*0.06,W*0.018,W*0.045,W*0.008);ctx.fill();}
+    // thumb
+    ctx.fillStyle="#222937";roundRect(side>0?-W*0.05:W*0.032,-W*0.01,W*0.018,W*0.04,W*0.008);ctx.fill();
+    // wrist accent
+    ctx.fillStyle=C.cyan;ctx.globalAlpha=.5;ctx.fillRect(-W*0.05,W*0.05,W*0.10,W*0.006);ctx.globalAlpha=1;
+    ctx.restore();
+  }
+  ctx.restore();
+}
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+boot();
+</script>
+</body>
+</html>

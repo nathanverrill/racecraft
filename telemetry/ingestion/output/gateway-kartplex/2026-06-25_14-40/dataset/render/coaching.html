@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Kart Debrief · Gateway Kartplex T1</title>
+<style>
+  :root{--bg:#07090d;--panel:#0e1218;--panel2:#141a22;--grid:#1e2630;
+    --cyan:#00e5ff;--mag:#ff2bd6;--white:#e8eef5;--dim:#7d8a9a;
+    --purple:#b14cff;--green:#21e065;--yellow:#ffd23f;--red:#ff3b3b;}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--white);
+    font-family:"SF Mono",ui-monospace,"Roboto Mono",Menlo,Consolas,monospace;}
+  #wrap{max-width:1820px;margin:0 auto;padding:18px}
+  .head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px}
+  .title{font-size:26px;font-weight:800;letter-spacing:1px}
+  .sub{color:var(--cyan);font-size:13px;margin-top:4px}
+  .grid{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:14px}
+  .panel{background:var(--panel);border:1px solid var(--grid);border-radius:12px;padding:16px;position:relative}
+  .lab{color:var(--dim);font-size:11px;font-weight:700;letter-spacing:1.5px;margin-bottom:12px}
+  .hero{grid-column:1/2;grid-row:1/3}
+  canvas{display:block;width:100%}
+  .kpi{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:6px}
+  .kpi .b{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}
+  .kpi .l{font-size:11px;color:var(--dim)}
+  .barrow{display:flex;align-items:center;gap:10px;margin:9px 0}
+  .barrow .nm{width:42px;font-weight:800}
+  .bar{height:18px;border-radius:5px;background:var(--cyan);min-width:2px}
+  .tbl{width:100%;border-collapse:collapse;font-size:12px}
+  .tbl th{color:var(--dim);text-align:left;font-weight:700;padding:5px 6px;font-size:10px;letter-spacing:1px}
+  .tbl td{padding:5px 6px;border-top:1px solid var(--grid);font-variant-numeric:tabular-nums}
+  .score{display:inline-block;width:34px;text-align:center;border-radius:5px;font-weight:800;padding:2px 0}
+  .strat li{margin:8px 0;line-height:1.45;font-size:13px}
+  .strat .w{color:var(--cyan);font-weight:800}
+  .tag{font-size:10px;border:1px solid var(--grid);border-radius:14px;padding:2px 8px;color:var(--dim)}
+  .cue{font-size:12px;line-height:1.4;margin:6px 0;padding-left:14px;border-left:2px solid var(--mag)}
+  .secpill{display:inline-block;width:26px;text-align:center;font-weight:800;border-radius:4px}
+  #sponsors{display:flex;justify-content:center;gap:24px;opacity:.5;filter:saturate(.2);margin-top:16px}
+  #sponsors .sp{font-weight:800;font-size:12px;letter-spacing:2px;color:#9fb0c0;text-transform:uppercase}
+  #sponsors .dot{color:var(--grid)}
+  a.toggle{color:var(--cyan);text-decoration:none;font-size:12px;border:1px solid var(--grid);padding:6px 12px;border-radius:7px}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div class="head">
+    <div>
+      <div class="title">DEBRIEF · WHERE TO FIND TIME</div>
+      <div class="sub" id="sub">Gateway Kartplex T1 · Kart #19</div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <a class="toggle" href="onboard.html">▶ Onboard replay</a>
+      <a class="toggle" href="replay.html">★ Lap story</a>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- HERO: priority quadrant -->
+    <div class="panel hero">
+      <div class="lab">IMPROVEMENT PRIORITY · pace gap × inconsistency</div>
+      <canvas id="quad" height="430"></canvas>
+      <div id="quadnote" style="color:var(--dim);font-size:11px;margin-top:8px"></div>
+    </div>
+
+    <!-- opportunity + headline KPIs -->
+    <div class="panel">
+      <div class="lab">SESSION HEADLINE</div>
+      <div class="kpi">
+        <div><div class="b" id="kBest">–</div><div class="l">BEST LAP</div></div>
+        <div><div class="b" style="color:var(--green)" id="kTheo">–</div><div class="l">THEORETICAL</div></div>
+        <div><div class="b" style="color:var(--yellow)" id="kGap">–</div><div class="l">ON THE TABLE</div></div>
+      </div>
+      <div class="kpi">
+        <div><div class="b" id="kClean">–</div><div class="l">CLEAN LAPS</div></div>
+        <div><div class="b" id="kCV">–</div><div class="l">CLEAN-LAP CV</div></div>
+      </div>
+      <div class="lab" style="margin-top:14px">OPPORTUNITY · s/lap available</div>
+      <div id="oppbars"></div>
+    </div>
+
+    <!-- sector consistency ratings -->
+    <div class="panel">
+      <div class="lab">SECTOR CONSISTENCY</div>
+      <div id="secrating"></div>
+      <div class="lab" style="margin-top:14px">INCIDENTS (slow/▲ laps)</div>
+      <div id="incidents" style="font-size:12px;line-height:1.5"></div>
+    </div>
+
+    <!-- turn consistency table -->
+    <div class="panel" style="grid-column:2/4">
+      <div class="lab">PER-TURN CONSISTENCY · score · apex speed · line</div>
+      <table class="tbl" id="turntbl"><thead><tr>
+        <th>TURN</th><th>SEC</th><th>SCORE</th><th>APEX mph</th><th>±σ</th>
+        <th>LINE σ(m)</th><th>WHERE TO LOOK / CUE</th></tr></thead><tbody></tbody></table>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-top:14px">
+    <!-- next-session strategy -->
+    <div class="panel" style="grid-column:1/2">
+      <div class="lab">NEXT-SESSION STRATEGY</div>
+      <ol class="strat" id="strat"></ol>
+    </div>
+    <!-- session plan -->
+    <div class="panel">
+      <div class="lab">10-MIN SESSION PLAN</div>
+      <ol class="strat" id="plan"></ol>
+    </div>
+    <!-- best-practice cues -->
+    <div class="panel">
+      <div class="lab">KARTING BEST-PRACTICE CUES</div>
+      <div id="cues" style="max-height:300px;overflow:auto"></div>
+    </div>
+  </div>
+
+  <div id="sponsors">
+    <span class="sp" style="color:#e8eef5;font-size:15px"> Apple</span>
+    <span class="dot">·</span><span class="sp" style="color:#ff8000">McLaren</span>
+    <span class="dot">·</span><span class="sp" style="color:#d9a441">✳ Claude</span>
+    <span class="dot">·</span><span class="sp">Sodi Racing</span>
+    <span class="dot">·</span><span class="sp">Honda</span>
+    <span class="dot">·</span><span class="sp">Gateway Kartplex</span>
+  </div>
+</div>
+
+<script>
+const COL={cyan:"#00e5ff",mag:"#ff2bd6",white:"#e8eef5",dim:"#7d8a9a",grid:"#1e2630",
+  purple:"#b14cff",green:"#21e065",yellow:"#ffd23f",red:"#ff3b3b"};
+const $=id=>document.getElementById(id);
+function scoreColor(s){return s>=66?COL.green:(s>=40?COL.yellow:COL.red);}
+
+async function boot(){
+  const D=await (await fetch("render.json")).json();
+  const C=await (await fetch("coaching.json")).json();
+  const A=D.analytics;
+  $("sub").textContent=`Gateway Kartplex T1 · Kart #19 · ${D.session_key} · best ${A.actual_best_lap_s.toFixed(3)}s`;
+  $("kBest").textContent=A.actual_best_lap_s.toFixed(3);
+  $("kTheo").textContent=A.theoretical_best_lap_s.toFixed(3);
+  $("kGap").textContent="−"+A.gap_to_theoretical_s.toFixed(2)+"s";
+  $("kClean").textContent=`${A.n_clean_laps}/${A.n_laps}`;
+  $("kCV").textContent=(A.lap_clean.cv*100).toFixed(1)+"%";
+
+  // opportunity bars
+  const opp=A.opportunity_ranking, omax=Math.max(...opp.map(o=>o.opportunity_s));
+  $("oppbars").innerHTML=opp.map((o,i)=>`<div class="barrow">
+     <span class="nm">${o.name.split(" ")[0]}</span>
+     <div class="bar" style="width:${o.opportunity_s/omax*100}%;background:${i==0?COL.red:COL.cyan}"></div>
+     <span style="color:var(--dim)">${o.opportunity_s.toFixed(2)}s</span></div>`).join("");
+
+  // sector consistency ratings
+  $("secrating").innerHTML=Object.entries(C.sector_consistency).map(([k,s])=>`
+    <div class="barrow"><span class="nm">${s.name.split(" ")[0]}</span>
+     <div class="bar" style="width:${s.consistency_score}%;background:${scoreColor(s.consistency_score)}"></div>
+     <span style="color:var(--dim)">${s.consistency_score.toFixed(0)}/100 · cv ${s.cv_pct}%</span></div>`).join("");
+
+  // incidents
+  const inc=C.incidents;
+  $("incidents").innerHTML = (inc.incident_laps.length?inc.incident_laps:[{lap:"–"}]).map(l=>
+    l.lap==="–"?'<span style="color:var(--green)">none — clean session</span>':
+    `L${l.lap} <span style="color:var(--red)">+${l.lost_s}s</span> <span class="tag">${l.peak_g}g peak</span>`).join("<br>")
+    + (inc.impact_locations&&inc.impact_locations.length?
+       `<div style="margin-top:8px;color:var(--dim)">hardest hit: ${inc.impact_locations[0].g}g @ ${inc.impact_locations[0].nearest_turn}</div>`:"");
+
+  // turn table
+  const tb=$("turntbl").querySelector("tbody");
+  const cueByTurn={}; (C.best_practice_cues||[]).forEach(c=>cueByTurn[c.num]=c.cues[0]);
+  tb.innerHTML=C.turn_consistency.map(t=>`<tr>
+    <td><b>T${t.num}</b></td>
+    <td><span class="secpill" style="background:${t.sector=='S1'?COL.purple:t.sector=='S2'?COL.green:COL.yellow};color:#000">${t.sector}</span></td>
+    <td><span class="score" style="background:${scoreColor(t.consistency_score)};color:#000">${t.consistency_score.toFixed(0)}</span></td>
+    <td>${t.apex_speed_mph_mean.toFixed(0)}</td>
+    <td style="color:var(--dim)">±${t.apex_speed_mph_std.toFixed(1)}</td>
+    <td style="color:var(--dim)">${t.line_spread_m?.toFixed(1)??"–"}</td>
+    <td style="color:#c9d4df;font-size:11px">${cueByTurn[t.num]||"Solid — hold this."}</td></tr>`).join("");
+
+  // strategy + plan
+  $("strat").innerHTML=C.next_session_strategy.map(s=>
+    `<li><span class="w">${s.where}</span> — ${s.do} <span class="tag">${s.why}</span></li>`).join("");
+  $("plan").innerHTML=C.session_plan.map(p=>`<li>${p}</li>`).join("");
+
+  // cues
+  $("cues").innerHTML=(C.best_practice_cues||[]).map(c=>
+    `<div style="margin-bottom:10px"><b>T${c.num}</b> <span class="tag">score ${c.consistency_score.toFixed(0)}</span>`+
+    c.cues.map(x=>`<div class="cue">${x}</div>`).join("")+`</div>`).join("");
+
+  drawQuad(A);
+  window.__seekFrame=()=>{};      // static page: no-op for the shared shooter
+  window.__ready=true;
+}
+
+function drawQuad(A){
+  const c=$("quad"); const dpr=devicePixelRatio;
+  c.width=c.clientWidth*dpr; c.height=430*dpr;
+  const x=c.getContext("2d"); const w=c.width,h=c.height,m=44*dpr;
+  const pq=A.priority_quadrant;
+  const xm=Math.max(...pq.map(p=>p.x_pace_gap))*1.3+0.05;
+  const ym=Math.max(...pq.map(p=>p.y_std))*1.3+0.05;
+  const X=v=>m+v/xm*(w-1.5*m), Y=v=>h-m-v/ym*(h-1.7*m);
+  // quadrant shading (top-right = biggest opportunity)
+  x.fillStyle="rgba(255,59,59,.07)";x.fillRect(X(xm/2),Y(ym),X(xm)-X(xm/2),Y(ym/2)-Y(ym));
+  x.strokeStyle=COL.grid;x.lineWidth=1*dpr;
+  x.beginPath();x.moveTo(X(xm/2),Y(0));x.lineTo(X(xm/2),Y(ym));x.moveTo(X(0),Y(ym/2));x.lineTo(X(xm),Y(ym/2));x.stroke();
+  // axes
+  x.strokeStyle="#2a3440";x.beginPath();x.moveTo(m,Y(0));x.lineTo(w-m/2,Y(0));x.moveTo(m,Y(0));x.lineTo(m,m/2);x.stroke();
+  x.fillStyle=COL.dim;x.font=`${12*dpr}px monospace`;
+  x.fillText("PACE GAP (mean−best) →",m,h-12*dpr);
+  x.save();x.translate(16*dpr,h/2);x.rotate(-Math.PI/2);x.fillText("INCONSISTENCY σ →",0,0);x.restore();
+  x.fillStyle=COL.red;x.font=`bold ${13*dpr}px monospace`;x.textAlign="right";
+  x.fillText("BIGGEST OPPORTUNITY",w-m,m);x.textAlign="left";
+  x.fillStyle=COL.green;x.fillText("HOLD",X(0)+6*dpr,Y(0)-8*dpr);
+  // points
+  pq.forEach((p,i)=>{const px=X(p.x_pace_gap),py=Y(p.y_std);
+    x.fillStyle="rgba(0,229,255,.18)";x.beginPath();x.arc(px,py,22*dpr,0,7);x.fill();
+    x.fillStyle=i==0?COL.red:COL.cyan;x.strokeStyle=COL.white;x.lineWidth=2*dpr;
+    x.beginPath();x.arc(px,py,9*dpr,0,7);x.fill();x.stroke();
+    x.fillStyle=COL.white;x.font=`bold ${14*dpr}px monospace`;x.textAlign="center";
+    x.fillText(p.name.split(" ")[0],px,py-16*dpr);x.textAlign="left";});
+  $("quadnote").textContent="Top-right = slow AND inconsistent = attack first. Bottom-left = fast & repeatable = hold.";
+}
+boot();
+</script>
+</body>
+</html>

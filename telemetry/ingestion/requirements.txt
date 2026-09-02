@@ -1,0 +1,26 @@
+# Core data / numerics
+numpy
+scipy
+pandas
+pyarrow            # parquet (aligned_100hz.parquet)
+
+# GPS / fusion / lap detection use numpy+scipy (spline, ZUPT, gate crossings)
+
+# Audio sync (0.193% drift fit) + RPM/throttle later
+librosa            # audio load/RMS/FFT; pulls soundfile
+soundfile
+
+# Image ingest: read iPhone .heic timing-sheet/map photos
+pillow
+pillow-heif        # HEIC support for Pillow
+
+# Weather consumer (Stage B): historical lookup from timesheet datetime
+requests
+
+# Vision/OCR of timing sheets: the agent (Claude) reads the images directly.
+# If a programmatic OCR fallback is wanted, add one then, e.g.:
+# pytesseract       # requires system 'tesseract' binary
+
+# Stage B (consumers): design mockups + video frame compositing
+matplotlib
+# playwright       # headless frame capture for video (install browser: playwright install chromium)

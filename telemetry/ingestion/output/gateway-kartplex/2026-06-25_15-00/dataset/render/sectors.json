@@ -1,0 +1,128 @@
+{
+  "venue": "gateway-kartplex",
+  "lap_length_m": 612.0,
+  "racing_direction": "counterclockwise",
+  "gate": {
+    "lat": 38.64862991,
+    "lon": -90.1351422,
+    "heading_deg": 156.5,
+    "half_width_m": 12,
+    "endpoints_lonlat": [
+      [
+        -90.13516231798133,
+        38.64866604562608
+      ],
+      [
+        -90.13512208484727,
+        38.64859377570983
+      ]
+    ],
+    "note": "S/F gate line (tower->bottom), perpendicular to track; seed from venue geojson, lateral offset tuned to min lap RMSE."
+  },
+  "sectors": [
+    {
+      "id": "S1",
+      "name": "ESSES",
+      "dist_frac": [
+        0.0,
+        0.33
+      ]
+    },
+    {
+      "id": "S2",
+      "name": "STRAIGHT",
+      "dist_frac": [
+        0.33,
+        0.63
+      ]
+    },
+    {
+      "id": "S3",
+      "name": "HAIRPIN",
+      "dist_frac": [
+        0.63,
+        1.0
+      ]
+    }
+  ],
+  "corners": [
+    {
+      "num": 1,
+      "name": "Turn 1",
+      "dist_frac": 0.053,
+      "sector": "S1",
+      "snap_dist_m": 1.6
+    },
+    {
+      "num": 2,
+      "name": "Turn 2",
+      "dist_frac": 0.23,
+      "sector": "S1",
+      "snap_dist_m": 3.2
+    },
+    {
+      "num": 3,
+      "name": "Turn 3",
+      "dist_frac": 0.329,
+      "sector": "S1",
+      "snap_dist_m": 1.6
+    },
+    {
+      "num": 4,
+      "name": "Turn 4",
+      "dist_frac": 0.416,
+      "sector": "S2",
+      "snap_dist_m": 12.5
+    },
+    {
+      "num": 5,
+      "name": "Turn 5",
+      "dist_frac": 0.478,
+      "sector": "S2",
+      "snap_dist_m": 4.6
+    },
+    {
+      "num": 6,
+      "name": "Turn 6",
+      "dist_frac": 0.715,
+      "sector": "S3",
+      "snap_dist_m": 5.6
+    },
+    {
+      "num": 7,
+      "name": "Turn 7",
+      "dist_frac": 0.747,
+      "sector": "S3",
+      "snap_dist_m": 0.3
+    },
+    {
+      "num": 8,
+      "name": "Turn 8",
+      "dist_frac": 0.779,
+      "sector": "S3",
+      "snap_dist_m": 4.3
+    },
+    {
+      "num": 9,
+      "name": "Turn 9",
+      "dist_frac": 0.797,
+      "sector": "S3",
+      "snap_dist_m": 9.5
+    },
+    {
+      "num": 10,
+      "name": "Turn 10",
+      "dist_frac": 0.847,
+      "sector": "S3",
+      "snap_dist_m": 5.4
+    },
+    {
+      "num": 11,
+      "name": "Turn 11",
+      "dist_frac": 0.943,
+      "sector": "S3",
+      "snap_dist_m": 1.6
+    }
+  ],
+  "corners_note": "T1..T11 apex seeds from venue geojson snapped to the validated best-lap GPS; dist_frac is position along that lap (0=S/F)."
+}

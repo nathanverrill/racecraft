@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>F1 Low-Bandwidth Replay</title>
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      #viewer-container {
+        width: 100%;
+        height: 100vh; /* full-screen canvas; controls float over it */
+        background-color: #1a1a1a;
+        cursor: move;
+      }
+      /* Fixed controls bar */
+      #controls {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 50; /* ensure above the canvas */
+        backdrop-filter: blur(6px);
+      }
+      /* Keep disabled button visible (don’t fade out) */
+      button[disabled] {
+        opacity: 1 !important;
+        filter: grayscale(15%);
+        cursor: not-allowed;
+      }
+      /* Custom slider track */
+      input[type="range"]::-webkit-slider-runnable-track {
+        background: #4a5568;
+      }
+      input[type="range"]::-moz-range-track {
+        background: #4a5568;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-900 text-white min-h-screen">
+    <!-- Header -->
+    <header class="text-center p-4 pointer-events-none select-none">
+      <h1 class="text-3xl font-bold text-red-500">F1 3D Replay Viewer</h1>
+      <p class="text-gray-400">Low-Bandwidth Telemetry Replay</p>
+    </header>
+
+    <!-- Loading / Info Panel -->
+    <div
+      id="info-panel"
+      class="mx-auto max-w-3xl text-center p-3 bg-gray-800 rounded-lg shadow-lg mb-2"
+    >
+      <p id="status-message" class="text-base text-yellow-400 break-words">
+        Loading session data...
+      </p>
+    </div>
+
+    <!-- 3D Viewer Container -->
+    <div id="viewer-container" class="shadow-inner overflow-hidden"></div>
+
+    <!-- Playback Controls: FIXED at bottom -->
+    <footer id="controls" class="p-4 bg-gray-800/90 shadow-lg">
+      <div class="max-w-6xl mx-auto flex items-center gap-4">
+        <button
+          id="play-pause-button"
+          class="bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-6 rounded-lg transition-all"
+          disabled
+        >
+          Play
+        </button>
+        <div class="flex-grow">
+          <span id="current-time" class="text-sm font-mono">00:00:00</span>
+          <input
+            type="range"
+            id="time-slider"
+            class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+            min="0"
+            max="7200"
+            value="0"
+            disabled
+          />
+        </div>
+        <span id="total-time" class="text-sm font-mono">00:00:00</span>
+      </div>
+    </footer>
+
+    <!-- three.js + controls -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <script type="module">
+      // --- Global State ---
+      let scene, camera, renderer, controls;
+      let raceData = {};
+      const carMeshes = new Map();
+
+      const playbackState = {
+        isPlaying: false,
+        currentTime: 0, // seconds
+        maxTime: 0,
+        animationFrameId: null,
+      };
+
+      // --- DOM Elements ---
+      const container = document.getElementById("viewer-container");
+      const statusMessage = document.getElementById("status-message");
+      const playButton = document.getElementById("play-pause-button");
+      const timeSlider = document.getElementById("time-slider");
+      const currentTimeLabel = document.getElementById("current-time");
+      const totalTimeLabel = document.getElementById("total-time");
+
+      // Quick sanity: if you don’t see this in the console, you may be loading a different file.
+      console.log("Play button element:", playButton);
+
+      // --- Config ---
+      const API_BASE = "http://127.0.0.1:8081";
+      const YEAR = 2024;
+      const EVENT = "Bahrain";
+      const CAR_SIZE = 15;
+
+      function formatTime(totalSeconds) {
+        const s = Math.max(0, Math.floor(totalSeconds));
+        const hours = Math.floor(s / 3600);
+        const minutes = Math.floor((s % 3600) / 60);
+        const seconds = s % 60;
+        return [hours, minutes, seconds]
+          .map((v) => v.toString().padStart(2, "0"))
+          .join(":");
+      }
+
+      // --- 3D Scene Initialization ---
+      function initScene() {
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x1a1a1a);
+
+        camera = new THREE.PerspectiveCamera(
+          75,
+          container.clientWidth / container.clientHeight,
+          0.1,
+          50000
+        );
+        camera.position.set(0, 500, 0);
+
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        container.appendChild(renderer.domElement);
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(100, 200, 100);
+        scene.add(directionalLight);
+
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.screenSpacePanning = false;
+        controls.minDistance = 100;
+        controls.maxDistance = 10000;
+        controls.maxPolarAngle = Math.PI / 2.1;
+
+        const groundGeo = new THREE.PlaneGeometry(50000, 50000);
+        const groundMat = new THREE.MeshLambertMaterial({ color: 0x2a2a2a });
+        const ground = new THREE.Mesh(groundGeo, groundMat);
+        ground.rotation.x = -Math.PI / 2;
+        ground.position.y = -20;
+        scene.add(ground);
+
+        window.addEventListener("resize", onWindowResize, false);
+      }
+
+      function onWindowResize() {
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+      }
+
+      // --- Data Loading ---
+      async function loadTrack() {
+        try {
+          statusMessage.innerText = `Loading track layout for ${YEAR} ${EVENT}...`;
+          const response = await fetch(
+            `${API_BASE}/api/track-layout/${YEAR}/${EVENT}`
+          );
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const trackData = await response.json();
+
+          if (!trackData || trackData.length === 0) {
+            statusMessage.innerText = "Error: No track data found.";
+            return;
+          }
+
+          // Map F1 coords to three.js (safe Z fallback)
+          const points = trackData.map(
+            (p) => new THREE.Vector3(p.X, p.Z ?? 0, -p.Y)
+          );
+          const geometry = new THREE.BufferGeometry().setFromPoints(points);
+          const material = new THREE.LineBasicMaterial({
+            color: 0xffffff,
+            linewidth: 2,
+          });
+          const trackLine = new THREE.Line(geometry, material);
+          scene.add(trackLine);
+
+          const center = new THREE.Box3()
+            .setFromPoints(points)
+            .getCenter(new THREE.Vector3());
+          camera.position.set(center.x, 1500, center.z + 500);
+          controls.target.set(center.x, center.y, center.z);
+          controls.update();
+        } catch (error) {
+          console.error("Error loading track:", error);
+          statusMessage.innerText = `Error loading track: ${error.message}`;
+        }
+      }
+
+      async function loadTelemetry() {
+        try {
+          statusMessage.innerText = `Loading race telemetry for ${YEAR} ${EVENT}...`;
+          const response = await fetch(
+            `${API_BASE}/api/race-telemetry/${YEAR}/${EVENT}`
+          );
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          raceData = await response.json();
+
+          if (Object.keys(raceData).length === 0) {
+            statusMessage.innerText = "Error: No telemetry data found.";
+            return;
+          }
+
+          createCarMeshes();
+          setupPlaybackControls();
+
+          statusMessage.innerText = `Loaded ${YEAR} ${EVENT} GP. Ready to play.`;
+          playButton.disabled = false; // <- show enabled
+          timeSlider.disabled = false;
+        } catch (error) {
+          console.error("Error loading telemetry:", error);
+          statusMessage.innerText = `Error loading telemetry: ${error.message}`;
+          // Keep controls visible even if disabled
+          playButton.disabled = true;
+          timeSlider.disabled = true;
+        }
+      }
+
+      function createCarMeshes() {
+        const carGeo = new THREE.BoxGeometry(
+          CAR_SIZE * 1.8,
+          CAR_SIZE * 0.5,
+          CAR_SIZE
+        );
+        for (const tla in raceData) {
+          const driver = raceData[tla];
+          const carMat = new THREE.MeshBasicMaterial({ color: driver.color });
+          const carMesh = new THREE.Mesh(carGeo, carMat);
+
+          const startPos = driver.telemetry[0];
+          if (startPos) {
+            carMesh.position.set(startPos.x, startPos.z ?? 0, -startPos.y);
+          }
+          scene.add(carMesh);
+          carMeshes.set(tla, carMesh);
+        }
+      }
+
+      function setupPlaybackControls() {
+        let max = 0;
+        for (const tla in raceData) {
+          const tel = raceData[tla].telemetry;
+          const lastTime = tel[tel.length - 1]?.time ?? 0;
+          if (lastTime > max) max = lastTime;
+        }
+        playbackState.maxTime = max;
+        timeSlider.max = max;
+        totalTimeLabel.innerText = formatTime(max);
+
+        playButton.addEventListener("click", () => {
+          if (playbackState.isPlaying) pause();
+          else play();
+        });
+
+        timeSlider.addEventListener("input", (e) => {
+          pause();
+          playbackState.currentTime = parseInt(e.target.value, 10);
+          updateFrame(playbackState.currentTime);
+        });
+      }
+
+      function play() {
+        playbackState.isPlaying = true;
+        playButton.innerText = "Pause";
+        playbackState.animationFrameId = requestAnimationFrame(animate);
+      }
+
+      function pause() {
+        playbackState.isPlaying = false;
+        playButton.innerText = "Play";
+        if (playbackState.animationFrameId) {
+          cancelAnimationFrame(playbackState.animationFrameId);
+          playbackState.animationFrameId = null;
+        }
+      }
+
+      let lastTimestamp = 0;
+      function animate(timestamp) {
+        if (!playbackState.isPlaying) return;
+
+        if (lastTimestamp === 0) lastTimestamp = timestamp;
+        const delta = (timestamp - lastTimestamp) / 1000;
+        lastTimestamp = timestamp;
+
+        playbackState.currentTime += delta;
+        if (playbackState.currentTime > playbackState.maxTime) {
+          playbackState.currentTime = 0;
+        }
+        updateFrame(playbackState.currentTime);
+        playbackState.animationFrameId = requestAnimationFrame(animate);
+      }
+
+      function updateFrame(time) {
+        timeSlider.value = time;
+        currentTimeLabel.innerText = formatTime(time);
+
+        for (const tla in raceData) {
+          const mesh = carMeshes.get(tla);
+          const tel = raceData[tla].telemetry;
+          if (!mesh || !tel || tel.length === 0) continue;
+
+          // Binary search for index <= time
+          let low = 0,
+            high = tel.length - 1,
+            index = 0;
+          while (low <= high) {
+            const mid = Math.floor((low + high) / 2);
+            if (tel[mid].time <= time) {
+              index = mid;
+              low = mid + 1;
+            } else {
+              high = mid - 1;
+            }
+          }
+
+          const a = tel[index];
+          const b = tel[index + 1] || a;
+          const dt = b.time - a.time;
+          const t = dt > 0 ? Math.min(1, Math.max(0, (time - a.time) / dt)) : 0;
+
+          const x = THREE.MathUtils.lerp(a.x, b.x, t);
+          const y = THREE.MathUtils.lerp(a.y, b.y, t);
+          const z = THREE.MathUtils.lerp(a.z ?? 0, b.z ?? 0, t);
+
+          mesh.position.set(x, z, -y);
+        }
+      }
+
+      function startRenderLoop() {
+        requestAnimationFrame(startRenderLoop);
+        controls.update();
+        renderer.render(scene, camera);
+      }
+
+      // --- Boot ---
+      try {
+        initScene();
+        startRenderLoop();
+        await loadTrack();
+        await loadTelemetry();
+      } catch (error) {
+        console.error("Initialization failed:", error);
+        statusMessage.innerText = "Fatal error. Check console.";
+        // Keep the controls bar visible
+        playButton.disabled = true;
+        timeSlider.disabled = true;
+      }
+    </script>
+  </body>
+</html>

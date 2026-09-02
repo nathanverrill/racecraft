@@ -1,0 +1,37 @@
+{
+  "zip_stem": "World_Wide_Technology_Raceway-2026-06-25_21-02-36",
+  "sessions": [
+    {
+      "session_key": "2026-06-25_14-40",
+      "datetime_local": "2026-06-25T14:40:00",
+      "window": {
+        "se0": 58.80130908203125,
+        "se1": 769.8007563476563,
+        "t0_ns": 1782421420000309000,
+        "t1_ns": 1782422120999756300,
+        "dur_s": 700.999447265625
+      },
+      "sheet_laps": 14,
+      "sheet_best": 40.519,
+      "sheet_median_lap": 42.0115,
+      "expected_drive_s": 588.161,
+      "duration_plausible": true
+    },
+    {
+      "session_key": "2026-06-25_15-00",
+      "datetime_local": "2026-06-25T15:00:00",
+      "window": {
+        "se0": 1153.8006235351563,
+        "se1": 1878.8023354492188,
+        "t0_ns": 1782422514999623400,
+        "t1_ns": 1782423230001335600,
+        "dur_s": 715.0017119140625
+      },
+      "sheet_laps": 13,
+      "sheet_best": 41.164,
+      "sheet_median_lap": 42.035,
+      "expected_drive_s": 546.4549999999999,
+      "duration_plausible": true
+    }
+  ]
+}

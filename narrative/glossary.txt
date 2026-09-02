@@ -1,0 +1,73 @@
+Apex: The tightest part of a corner. Essentially, the part of a corner every driver aims for to take the optimum line.
+
+Aquaplane: What happens to a car when it loses control on a wet surface. When a car’s tyres hit enough standing water that causes the driver to lose control of the car, no matter what they do to try and save it.
+
+Backmarker: The term used for a driver who is at the back of the field, often in an underperforming car.
+
+Bottoming: More common in the current era of cars, this is when the floor of the car scrapes along the track surface.
+
+Box: The common word used between engineers and drivers to tell them to pit. A contraction of ‘Bóxenstopp’, or ‘pit stop’ in German.
+
+Box opposite: A strategic instruction given to a driver from their engineer to do the opposite of the driver in front. So if the driver in front pits, stay on track, and if they stay out, come into the pits.
+
+CFD: A very important abbreviation in Formula 1: Computational Fluid Dynamics. This tool allows teams to predict aerodynamic airflow using complex mathematics and simulation tools, often used in conjunction with their allocated wind tunnel time, which is now strictly regulated.
+
+Compound: The term for a type of tyre, with ‘compound’ referring to the rubber mix in how it is constructed. Currently, three tyre compounds are brought to each race weekend, with one nominated the soft (red label, the fastest over one lap), medium (yellow label, the mid-distance, mid-performance option) and hard (white label, slowest one-lap performance but longest-lasting).
+
+Concorde Agreement: A vital document in Formula 1, which is a contract signed between the teams, the FIA and FOM [Formula One Management], dictating the terms under which the teams are able to go racing, how revenue is shared and other crucial details.
+
+Degradation: Also commonly shortened to ‘deg’, this is the catch-all term for tyre wear. The higher the degradation, the more a driver’s tyres are wearing.
+
+Delta: The catch-all term used to describe time difference between two laps or two different cars. A negative delta represents lap time improvement, due to the overall lap time being shorter, and vice versa for a positive delta.
+
+De-rating/De-rates: When the electrical element of a Formula 1 power unit, the MGU-K (Motor Generator Unit – Kinetic) runs out of energy, it no longer provides the power boost it is capable of, or de-rates, and needs recharging through braking.
+
+Dirty air: When one car is following another closely, they are following in the aerodynamic wake of the car in front, which affects their own performance – hence why it is ‘dirty air’, and driving away from other cars is known as ‘clean/clear air’.
+
+Double stack: When teams decide to pit both their drivers on the same lap, while running close together. One driver will pit, then their team-mate will pit close behind. The double stack often comes into play while the Safety Car is deployed, because the drivers lose less time in the pit lane.
+
+Downforce: The aerodynamic force pushing a car downwards as it travels forwards. A precious commodity in F1 that enables drivers to push the car to its limits through corners.
+
+DRS: Short for Drag Reduction System, the movable rear wing system is used as an overtaking aid and drivers are able to use it in designated zones of each circuit in practice and qualifying, and when within one second of the car in front during the race.
+
+ERS: Short for Energy Recovery System, this is the battery system within the power unit that offers access to a power boost to the drivers to deploy when they want to overtake another car, or use throughout a qualifying lap. They can recharge this by either driving slower, while energy is also recovered under braking.
+
+Flat spot: When a driver locks up a tyre and skids under braking and a large portion of rubber is worn in one place, the uneven wear creates a ‘flat spot’ where the tyre is no longer round, and a bumpy ride for the driver for the rest of their stint.
+
+Graining: Another tyre issue, when tyres are placed under enough stress that tiny parts of the rubber are displaced in ‘grains’, making it akin to driving on top of ball bearings from a driver’s perspective, slowing them down until the graining clears.
+
+Ground effect: The current F1 cars are designed with this method of aerodynamics, whereby a significant proportion of a car’s downforce is generated through its floor.
+
+Halo: The cockpit protection device now synonymous with modern Formula 1, the Halo is a curved bar placed above the driver’s head with another bar in the middle of the driver’s eyeline, which has been mandatory since 2018 and been credited with preventing a number of serious accidents.
+
+HANS device: Another vital safety feature which has been in F1 since 2003, standing for ‘head and neck support’ device, a carbon fibre neck restraint clips onto a driver’s helmet and rests on their shoulders to dramatically decrease the likelihood of head and neck injuries in high-speed crashes, from causes such as whiplash.
+
+Lift and coast: A technique used by drivers to conserve fuel in race conditions, whereby drivers can lift off the throttle on straights, coast at high speed, then brake for corners later than usual, while keeping relatively similar lap times.
+
+Marbles: Pieces of discarded rubber that fly off worn tyres during races. They are perilous to drive over as they dramatically reduce a driver’s grip level, but drivers pick up as many of them as they can on their tyres after a race finishes to increase their car’s weight.
+
+Overcut: When a driver extends their tyre strategy, pitting later to try and overtake one or more drivers after they have eventually pitted – the opposite of ‘undercut’.
+
+Oversteer: When a car’s rear end is unsettled on corner entry or too sensitive to steering input, the rear may try to ‘overtake’ the front of the car when the driver turns, causing the car to skid – requiring the driver to use opposite lock, turning the steering wheel the other way, to fix.
+
+Parc fermé: ‘Closed park’ in English, these conditions come into effect after the drivers leave the pit lane for qualifying, meaning that the teams are no longer allowed to make significant setup changes on their cars. Doing so means breaking parc fermé conditions, and could land the driver a grid penalty.
+
+Penalty points: Given to drivers for on-track infringements during race weekends. Accumulating 12 on their FIA Super Licence over a rolling 12-month period results in a one-race ban.
+
+Porpoising: Like ‘bottoming’ further up, ‘porpoising’ re-entered the Formula 1 lexicon when ground effect cars came back in 2022, though this is the result of the way the car’s downforce is generated pulling it towards the track surface, hitting the ground, bouncing back up again, and the process repeating at speed, causing a bumpy ride for the drivers affected.
+
+Pit window: When an engineer says ‘pit window open’, that means a driver has reached a point in the race when it is often a good time to pit, within a range of a few laps.
+
+Power unit: The correct term instead of simply ‘engine’ in Formula 1, a power unit is made up of multiple components – an ICE [Internal Combustion Engine], MGU-H [Motor Generator Unit – Hybrid], MGU-K [Motor Generator Unit – Kinetic], Turbocharger, Control Electronics and Energy Store, to go about powering a modern F1 car.
+
+Retirement: Not just used for when drivers call it a day on their careers, but when a driver is out of any given race for any reason, they are said to have retired from the race and registered a DNF, or ‘did not finish’.
+
+Target: The strategic term for the target pit lap discussed before the race. Teams keep their strategies a secret so try not to disclose their pit laps out loud, so if extending their stint by a lap, they will tell their driver ‘target plus one’, ‘target plus two’ etc.
+
+Tifosi: Not strictly an on-track term, ‘tifosi’ is essential to know because it is the catch-all term for Ferrari fans that you will hear all over the world. In English, ‘tifosi’ translates into ‘fans’ or ‘enthusiasts’, and more passionate ones you are unlikely to find.
+
+Undercut: The opposite of ‘overcut’, this is a strategic move for when a driver pits before a rival in front, puts fresh tyres on and tries to overtake by pitting sooner and ‘jumping’ them in the pit stops.
+
+Understeer: The opposite of oversteer, effectively the act of a car not turning in as much as expected when a driver turns the wheel – sliding wide of the apex as a result.
+
+Upgrade: New parts brought to a car for a particular race weekend, in the hope of making it faster.

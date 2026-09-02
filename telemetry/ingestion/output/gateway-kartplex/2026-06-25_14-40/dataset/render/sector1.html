@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Sector 1 Study · Gateway Kartplex T1</title>
+<style>
+  :root{--bg:#07090d;--panel:#0e1218;--panel2:#141a22;--grid:#1e2630;
+    --cyan:#00e5ff;--mag:#ff2bd6;--white:#e8eef5;--dim:#7d8a9a;
+    --purple:#b14cff;--green:#21e065;--yellow:#ffd23f;--red:#ff3b3b;--gold:#ffd23f;}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;width:100%;background:var(--bg);color:var(--white);overflow:hidden;
+    font-family:"SF Mono",ui-monospace,"Roboto Mono",Menlo,monospace;}
+  #app{height:100vh;width:100vw;display:grid;
+    grid-template-columns:1.15fr 1.15fr .9fr;
+    grid-template-rows:auto 1fr 1fr;gap:9px;padding:11px;}
+  .head{grid-column:1/4;display:flex;justify-content:space-between;align-items:center}
+  .title{font-size:19px;font-weight:800;letter-spacing:1px}.title b{color:var(--purple)}
+  .sub{color:var(--cyan);font-size:11px;margin-top:3px}
+  .kpis{display:flex;gap:16px}
+  .kpi .b{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums}
+  .kpi .l{font-size:8px;color:var(--dim);letter-spacing:1px}
+  .panel{background:var(--panel);border:1px solid var(--grid);border-radius:10px;position:relative;overflow:hidden;min-height:0}
+  .lab{position:absolute;top:7px;left:11px;color:var(--dim);font-size:9px;font-weight:700;letter-spacing:1.3px;z-index:3}
+  canvas{display:block;width:100%;height:100%}
+  /* layout slots */
+  #map{grid-row:2/4}              /* track + heatmap, tall left */
+  #overlay{grid-column:2/3;grid-row:2/3}  /* speed overlay + consistency band */
+  #delta{grid-column:2/3;grid-row:3/4}    /* delta vs ref */
+  #ranked{grid-column:3/4;grid-row:2/3}   /* laps best->worst */
+  #turns{grid-column:3/4;grid-row:3/4}    /* per-turn markers */
+  #ranked,#turns{padding:26px 10px 8px;overflow:hidden}
+  .rk{display:grid;grid-template-columns:18px 30px 1fr 52px;gap:6px;align-items:center;
+    font-size:11px;padding:2px 4px;border-radius:5px;margin-bottom:2px}
+  .rk .pos{color:var(--dim)} .rk .bar{height:9px;border-radius:4px;background:var(--cyan)}
+  .rk.best{background:rgba(255,210,63,.10)} .rk.best .lap{color:var(--gold);font-weight:800}
+  .trow{display:grid;grid-template-columns:26px 1fr 1fr 1fr 1fr;gap:4px;align-items:center;
+    padding:3px 4px;border-radius:6px;margin-bottom:3px;background:var(--panel2)}
+  .trow.key{outline:1px solid var(--gold)}
+  .trow .tn{font-weight:800;font-size:13px}
+  .cell .v{font-size:13px;font-weight:800;font-variant-numeric:tabular-nums}
+  .cell .l{font-size:7px;color:var(--dim)}
+  .v.app{color:var(--cyan)}.v.apx{color:var(--gold)}.v.ex{color:var(--green)}.v.br{color:var(--red)}
+  #cues{grid-column:1/4;grid-row:4/5}
+  /* squeeze a cue ribbon into the head area instead (keep 3 rows) */
+  #cuebar{grid-column:1/4;display:none}
+  .legend{position:absolute;bottom:6px;left:11px;font-size:8px;color:var(--dim);z-index:3}
+  #spons{position:absolute;bottom:5px;right:11px;font-size:8px;color:var(--dim);opacity:.5}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="head">
+    <div><div class="title">SECTOR <b>1</b> STUDY · S/F → T5</div>
+      <div class="sub" id="sub">Gateway Kartplex T1 · Kart #19</div></div>
+    <div class="kpis">
+      <div class="kpi"><div class="b" style="color:var(--gold)" id="kRef">–</div><div class="l">BEST S1 · REF LAP</div></div>
+      <div class="kpi"><div class="b" id="kMean">–</div><div class="l">MEAN</div></div>
+      <div class="kpi"><div class="b" id="kStd">–</div><div class="l">σ</div></div>
+      <div class="kpi"><div class="b" style="color:var(--cyan)" id="kEntry">–</div><div class="l">ENTRY SPEED</div></div>
+      <div class="kpi"><div class="b" style="color:var(--red)" id="kBrake">–</div><div class="l">BRAKE ZONES</div></div>
+    </div>
+  </div>
+
+  <div class="panel" id="map"><div class="lab">BRAKING & TURN POINTS · best S1 line (gold) · ▮ brake · ● apex</div>
+    <canvas id="mapcv"></canvas>
+    <div class="legend">red ▮ = brake here · gold ● = apex (min speed) · faint = all laps</div></div>
+
+  <div class="panel" id="overlay"><div class="lab">SPEED · all laps (muted) · best (gold) · σ band heatmap</div>
+    <canvas id="ovcv"></canvas></div>
+
+  <div class="panel" id="delta"><div class="lab">DELTA vs BEST S1 (s) · where time is won/lost by distance</div>
+    <canvas id="dtcv"></canvas></div>
+
+  <div class="panel" id="ranked"><div class="lab">LAPS · BEST → WORST through S1</div>
+    <div id="rklist"></div></div>
+
+  <div class="panel" id="turns"><div class="lab">WHERE TO BRAKE &amp; TURN · next run</div>
+    <div id="turnrows"></div>
+    <div id="spons"> · McLaren · ✳Claude · Sodi · Honda</div></div>
+</div>
+<script>
+const C={cyan:"#00e5ff",gold:"#ffd23f",white:"#e8eef5",dim:"#7d8a9a",grid:"#1e2630",
+  green:"#21e065",red:"#ff3b3b",mag:"#ff2bd6"};
+const $=id=>document.getElementById(id);
+let S1,trk;
+function heat(t){ // 0(consistent)->green, 1(varies)->red, via yellow
+  t=Math.max(0,Math.min(1,t));
+  const stops=[[0,[33,224,101]],[0.5,[255,210,63]],[1,[255,59,59]]];
+  for(let i=1;i<stops.length;i++)if(t<=stops[i][0]){const a=stops[i-1],b=stops[i],f=(t-a[0])/(b[0]-a[0]);
+    return`rgb(${a[1].map((c,j)=>Math.round(c+(b[1][j]-c)*f)).join(",")})`;}return"rgb(255,59,59)";}
+async function boot(){
+  S1=await(await fetch("sector1.json")).json();
+  const rj=await(await fetch("render.json")).json();trk=rj.track_polyline;
+  $("sub").textContent=`Gateway Kartplex T1 · Kart #19 · ${S1.session_key} · ref = best S1 (L${S1.reference_lap}) · ${S1.n_clean_laps} clean laps`;
+  $("kRef").textContent=S1.reference_s1_time.toFixed(3)+"s";
+  $("kMean").textContent=S1.s1_mean_time.toFixed(3)+"s";
+  $("kStd").textContent="±"+S1.s1_std_time.toFixed(2);
+  $("kEntry").textContent=(S1.entry_speed_mph?S1.entry_speed_mph.toFixed(0):"–")+" mph";
+  const sb=S1.consistency_band;
+  $("kBrake").textContent=S1.braking_zones.length;
+
+  // ranked laps best->worst
+  const worst=S1.per_lap_ranked[S1.per_lap_ranked.length-1].s1_time;
+  const best=S1.per_lap_ranked[0].s1_time;
+  $("rklist").innerHTML=S1.per_lap_ranked.map((L,i)=>{
+    const w=10+(1-(L.s1_time-best)/Math.max(worst-best,.01))*90;
+    return `<div class="rk ${i==0?'best':''}"><span class="pos">${i+1}</span>
+      <span class="lap">L${L.lap}</span>
+      <div class="bar" style="width:${w}%;background:${i==0?C.gold:C.cyan};opacity:${1-i*0.07}"></div>
+      <span style="text-align:right;font-variant-numeric:tabular-nums">${L.s1_time.toFixed(3)}</span></div>`;}).join("");
+
+  // braking zones: where to brake/apex + the next-run cue
+  $("turnrows").innerHTML=S1.braking_zones.map((z,i)=>`
+    <div class="trow key">
+      <div class="tn" style="color:${C.red}">${z.label}</div>
+      <div class="cell"><div class="v app">${z.approach_mph.toFixed(0)}</div><div class="l">APPROACH</div></div>
+      <div class="cell"><div class="v br">${Math.round(z.brake_frac*100)}%</div><div class="l">BRAKE @lap</div></div>
+      <div class="cell"><div class="v apx">${z.apex_mph.toFixed(0)}</div><div class="l">APEX ±${z.apex_mph_std}</div></div>
+      <div class="cell"><div class="v ex">${z.exit_mph.toFixed(0)}</div><div class="l">EXIT</div></div>
+    </div>
+    <div style="font-size:10px;color:#c9d4df;line-height:1.3;margin:2px 4px 8px">${z.cues.join(" ")}</div>`
+    ).join("") || '<div style="color:var(--dim);font-size:11px">No heavy braking zone in S1 — it flows; carry entry speed.</div>';
+
+  sizeAll();window.onresize=sizeAll;window.__ready=true;window.__seekFrame=()=>{};
+}
+function sizeAll(){for(const id of["mapcv","ovcv","dtcv"]){const c=$(id),r=c.parentElement.getBoundingClientRect();
+  c.width=r.width*devicePixelRatio;c.height=r.height*devicePixelRatio;}drawMap();drawOverlay();drawDelta();}
+
+function drawMap(){
+  const c=$("mapcv"),x=c.getContext("2d"),W=c.width,H=c.height;x.clearRect(0,0,W,H);
+  const m=0.10*Math.min(W,H);const M=(px,py)=>[m+px*(W-2*m),H-(m+py*(H-2*m))];
+  // full track faint (whole lap, for context)
+  x.lineWidth=Math.max(8,W*0.012);x.strokeStyle="#141a22";x.lineJoin="round";x.lineCap="round";
+  x.beginPath();trk.forEach((p,i)=>{const[a,b]=M(p[0],p[1]);i?x.lineTo(a,b):x.moveTo(a,b);});x.stroke();
+  // S1 reference LINE (gold) - the actual best-S1 driven line, out-lap excluded
+  const rl=S1.reference_line;
+  x.strokeStyle=C.gold;x.lineWidth=Math.max(5,W*0.009);x.beginPath();
+  rl.forEach((p,i)=>{const[a,b]=M(p[0],p[1]);i?x.lineTo(a,b):x.moveTo(a,b);});x.stroke();
+  // brake markers (red bar) + apex markers (gold dot) from data-derived zones
+  S1.braking_zones.forEach(z=>{
+    const[bx,by]=M(z.brake_xy[0],z.brake_xy[1]);
+    x.strokeStyle=C.red;x.lineWidth=Math.max(4,W*0.007);
+    x.beginPath();x.arc(bx,by,Math.max(7,W*0.011),0,7);x.stroke();
+    x.fillStyle=C.red;x.font=`bold ${Math.round(W*0.012)}px monospace`;
+    x.fillText("▮ BRAKE "+z.approach_mph.toFixed(0)+"mph",bx+10,by-6);
+    const[ax,ay]=M(z.apex_xy[0],z.apex_xy[1]);
+    x.fillStyle=C.gold;x.beginPath();x.arc(ax,ay,Math.max(6,W*0.009),0,7);x.fill();
+    x.fillStyle=C.white;x.font=`bold ${Math.round(W*0.012)}px monospace`;
+    x.fillText("● APEX "+z.apex_mph.toFixed(0)+"mph",ax+10,ay+14);
+  });
+  // S/F label
+  const[sa,sbb]=M(trk[0][0],trk[0][1]);x.fillStyle=C.green;x.font=`bold ${Math.round(W*0.012)}px monospace`;x.fillText("S/F",sa-8,sbb-7);
+}
+function drawOverlay(){
+  const c=$("ovcv"),x=c.getContext("2d"),W=c.width,H=c.height,m=16*devicePixelRatio;x.clearRect(0,0,W,H);
+  const sb=S1.consistency_band,g=sb.grid_m,dmax=Math.max(...g);
+  const all=S1.per_lap_ranked;const smax=Math.max(...sb.max_mph)*1.05,smin=Math.min(...sb.min_mph)*0.9;
+  const X=d=>m+(W-2*m)*d/dmax, Y=s=>H-m-(H-2*m)*(s-smin)/(smax-smin);
+  // consistency band heatmap (min..max envelope, colored by std)
+  const maxStd=Math.max(...sb.std_mph)||1;
+  for(let i=0;i<g.length-1;i++){x.fillStyle=heat(sb.std_mph[i]/maxStd);x.globalAlpha=.16;
+    x.beginPath();x.moveTo(X(g[i]),Y(sb.min_mph[i]));x.lineTo(X(g[i+1]),Y(sb.min_mph[i+1]));
+    x.lineTo(X(g[i+1]),Y(sb.max_mph[i+1]));x.lineTo(X(g[i]),Y(sb.max_mph[i]));x.closePath();x.fill();}
+  x.globalAlpha=1;
+  // muted historical laps
+  all.forEach((L,i)=>{if(i==0)return;x.strokeStyle="#3a4654";x.globalAlpha=.35;x.lineWidth=1*devicePixelRatio;
+    x.beginPath();g.forEach((d,k)=>{const xx=X(d),yy=Y(L.speed_mph[k]);k?x.lineTo(xx,yy):x.moveTo(xx,yy);});x.stroke();});
+  x.globalAlpha=1;
+  // best lap (gold) bold
+  x.strokeStyle=C.gold;x.lineWidth=2.4*devicePixelRatio;x.beginPath();
+  g.forEach((d,k)=>{const xx=X(d),yy=Y(all[0].speed_mph[k]);k?x.lineTo(xx,yy):x.moveTo(xx,yy);});x.stroke();
+  x.fillStyle=C.dim;x.font=`${10*devicePixelRatio}px monospace`;x.fillText(`${Math.round(smin)}–${Math.round(smax)} mph`,m+3*devicePixelRatio,m+11*devicePixelRatio);
+}
+function drawDelta(){
+  const c=$("dtcv"),x=c.getContext("2d"),W=c.width,H=c.height,m=16*devicePixelRatio;x.clearRect(0,0,W,H);
+  const all=S1.per_lap_ranked,sb=S1.consistency_band,g=sb.grid_m,dmax=Math.max(...g);
+  let dmin=0,dmx=0;all.forEach(L=>L.delta_vs_ref.forEach(v=>{dmin=Math.min(dmin,v);dmx=Math.max(dmx,v);}));
+  const pad=(dmx-dmin)*0.1||.2;dmin-=pad;dmx+=pad;
+  const X=d=>m+(W-2*m)*d/dmax,Y=v=>m+(H-2*m)*(dmx-v)/(dmx-dmin);
+  x.strokeStyle=C.grid;x.lineWidth=1;x.beginPath();x.moveTo(m,Y(0));x.lineTo(W-m,Y(0));x.stroke();
+  x.fillStyle=C.gold;x.font=`${10*devicePixelRatio}px monospace`;x.fillText("BEST",m+3*devicePixelRatio,Y(0)-4*devicePixelRatio);
+  all.forEach((L,i)=>{if(i==0)return;const fade=Math.max(.18,.8-i*0.08);
+    x.strokeStyle=`rgba(0,229,255,${fade})`;x.lineWidth=(i<=2?1.8:1)*devicePixelRatio;x.beginPath();
+    g.forEach((d,k)=>{const xx=X(d),yy=Y(L.delta_vs_ref[k]);k?x.lineTo(xx,yy):x.moveTo(xx,yy);});x.stroke();});
+  x.fillStyle=C.dim;x.font=`${10*devicePixelRatio}px monospace`;
+  x.fillText("+slower",m+3*devicePixelRatio,m+10*devicePixelRatio);
+  x.fillText(`${Math.round(dmax)} m`,W-m-32*devicePixelRatio,H-4*devicePixelRatio);
+}
+boot();
+</script>
+</body>
+</html>

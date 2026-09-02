@@ -1,0 +1,593 @@
+{
+  "type": "FeatureCollection",
+  "name": "gateway_kartplex_t1_landmarks",
+  "metadata": {
+    "venue": "Gateway Kartplex",
+    "track": "Track 1 (T1)",
+    "located_in": "World Wide Technology Raceway",
+    "address": "700 Raceway Blvd, Madison, IL 62060",
+    "plus_code": "JVX7+HX Madison, Illinois",
+    "racing_direction": "counterclockwise",
+    "crs": "WGS84 (EPSG:4326), lon/lat order per GeoJSON spec",
+    "units": "meters for any derived distance/bearing properties",
+    "provenance": "Seed landmarks AND corner apexes hand-placed on Google Maps satellite imagery by the user. NOT survey-grade. Satellite imagery is offset from the phone GPS by several meters.",
+    "intended_use": "Seeds for a kart-telemetry pipeline (Sensor Logger GPS). Snap each landmark to the nearest point on the real GPS track and validate by data before use. Do NOT treat any coordinate, vertex, length, or bearing as exact.",
+    "validation": {
+      "start_finish_gate": "validate by minimizing lap-time RMSE across crossings",
+      "pit_exit_entrance": "validate via speed/heading discontinuities on out-/in-laps",
+      "general": "every point is APPROXIMATE; GPS track is geometry truth"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "sf_gate",
+        "role": "start_finish_gate",
+        "name": "Start/Finish gate (midpoint, derived)",
+        "pipeline_use": "lap_detection: detect crossings of the S/F gate segment",
+        "derived": true,
+        "derived_from": [
+          "sf_top",
+          "sf_bottom"
+        ],
+        "approximate": true,
+        "confidence": "seed_approximate",
+        "gate_length_m_approx": 8.77,
+        "gate_bearing_deg_approx": 156.5,
+        "track_heading_at_sf_deg_approx": "66.5 or 246.5 (perpendicular to gate; resolve sign from GPS direction of travel)",
+        "marker-color": "#ff7f00",
+        "note": "Midpoint of the two S/F endpoints below. Use the SEGMENT (sf_top -> sf_bottom) for an angled, offset-tolerant crossing test rather than this single point."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.1351422,
+          38.6486299
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "sf_gate_line",
+        "role": "start_finish_gate_segment",
+        "name": "S/F GATE line (tower -> bottom, perpendicular to track)",
+        "pipeline_use": "lap_detection: segment-crossing test (closest-approach / angled S/F crossing)",
+        "approximate": true,
+        "confidence": "seed_approximate",
+        "stroke": "#ff7f00",
+        "stroke-width": 4,
+        "note": "ROUGH SKETCH of gate position/orientation only. Endpoints order is tower(top) -> bottom. Snap and re-fit against GPS; gate angle should be tuned to minimize lap-time RMSE."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -90.13516231798133,
+            38.64866604562608
+          ],
+          [
+            -90.13512208484727,
+            38.64859377570983
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "sf_top",
+        "role": "timing_tower",
+        "name": "Timing tower (S/F top endpoint)",
+        "pipeline_use": "lap_detection: one endpoint of S/F gate segment",
+        "approximate": true,
+        "confidence": "seed_approximate",
+        "marker-color": "#ff7f00",
+        "note": "APPROXIMATE seed position - snap to GPS track + validate; not exact."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.13516231798133,
+          38.64866604562608
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "sf_bottom",
+        "role": "start_finish_endpoint",
+        "name": "S/F line bottom endpoint",
+        "pipeline_use": "lap_detection: other endpoint of S/F gate segment",
+        "approximate": true,
+        "confidence": "seed_approximate",
+        "marker-color": "#ff7f00",
+        "note": "APPROXIMATE seed position - snap to GPS track + validate; not exact."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.13512208484727,
+          38.64859377570983
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "pit_exit",
+        "role": "pit_exit",
+        "name": "Pit EXIT onto track",
+        "pipeline_use": "out_lap_detection: first point back on track after leaving pit",
+        "approximate": true,
+        "confidence": "seed_approximate",
+        "marker-color": "#33a02c",
+        "note": "APPROXIMATE seed position - snap to GPS track + validate via speed/heading; not exact."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.13503748291448,
+          38.648065935814756
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "pit_entrance",
+        "role": "pit_entrance",
+        "name": "Pit ENTRANCE from track",
+        "pipeline_use": "in_lap_detection: point where a kart leaves the track into the pit",
+        "approximate": true,
+        "confidence": "seed_approximate",
+        "marker-color": "#e31a1c",
+        "note": "APPROXIMATE seed position - snap to GPS track + validate via speed/heading; not exact."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.13451136518044,
+          38.64936856149834
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "paddock",
+        "role": "paddock_pit",
+        "name": "Front of paddock / pit",
+        "pipeline_use": "context: stationary/idle classification, session staging",
+        "approximate": true,
+        "confidence": "seed_approximate",
+        "marker-color": "#1f78b4",
+        "note": "APPROXIMATE seed position - snap to GPS track + validate; not exact."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.13557806036687,
+          38.648656619119365
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "venue_center",
+        "role": "venue_center",
+        "name": "Venue center",
+        "pipeline_use": "context: map centering / bounding only",
+        "approximate": true,
+        "confidence": "seed_approximate",
+        "marker-color": "#888888",
+        "note": "APPROXIMATE seed position - snap to GPS track + validate; not exact."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.135464,
+          38.6486624
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "pit_route_out",
+        "role": "pit_route_out_sketch",
+        "name": "approx enter to track from pit",
+        "pipeline_use": "context only: which side the pit-out loop runs",
+        "approximate": true,
+        "confidence": "rough_sketch",
+        "stroke": "#33a02c",
+        "stroke-width": 3,
+        "note": "ROUGH SKETCH of route shape/side only - few vertices, not the driven line, not to scale."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -90.1356171,
+            38.6486443
+          ],
+          [
+            -90.1356771,
+            38.6486034
+          ],
+          [
+            -90.1356676,
+            38.6485039
+          ],
+          [
+            -90.1355974,
+            38.6483877
+          ],
+          [
+            -90.1355244,
+            38.6483329
+          ],
+          [
+            -90.1354402,
+            38.6482824
+          ],
+          [
+            -90.1353026,
+            38.6481991
+          ],
+          [
+            -90.135239,
+            38.6481698
+          ],
+          [
+            -90.1351392,
+            38.6481156
+          ],
+          [
+            -90.1350264,
+            38.6480681
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "pit_route_in",
+        "role": "pit_route_in_sketch",
+        "name": "approx return to pit from track",
+        "pipeline_use": "context only: which side the pit-in loop runs",
+        "approximate": true,
+        "confidence": "rough_sketch",
+        "stroke": "#e31a1c",
+        "stroke-width": 3,
+        "note": "ROUGH SKETCH of route shape/side only - few vertices, not the driven line, not to scale."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -90.1345362,
+            38.6494233
+          ],
+          [
+            -90.134649,
+            38.6499281
+          ],
+          [
+            -90.1351913,
+            38.6498299
+          ],
+          [
+            -90.1348442,
+            38.6488745
+          ],
+          [
+            -90.1354125,
+            38.6487152
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "turn_1",
+        "role": "corner",
+        "seq": 1,
+        "name": "Turn 1",
+        "pipeline_use": "corner reference: per-corner min-speed, apex timing, mini-sector splits",
+        "approximate": true,
+        "confidence": "seed_approximate",
+        "marker-color": "#6a3d9a",
+        "marker-symbol": "1",
+        "note": "APPROXIMATE apex seed - derive true apex from GPS curvature/heading-rate; not exact."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.1354567,
+          38.6484393
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "turn_2",
+        "role": "corner",
+        "seq": 2,
+        "name": "Turn 2",
+        "pipeline_use": "corner reference: per-corner min-speed, apex timing, mini-sector splits",
+        "approximate": true,
+        "confidence": "seed_approximate",
+        "marker-color": "#6a3d9a",
+        "marker-symbol": "2",
+        "note": "APPROXIMATE apex seed - derive true apex from GPS curvature/heading-rate; not exact."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.1346456,
+          38.6485682
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "turn_3",
+        "role": "corner",
+        "seq": 3,
+        "name": "Turn 3",
+        "pipeline_use": "corner reference: per-corner min-speed, apex timing, mini-sector splits",
+        "approximate": true,
+        "confidence": "seed_approximate",
+        "marker-color": "#6a3d9a",
+        "marker-symbol": "3",
+        "note": "APPROXIMATE apex seed - derive true apex from GPS curvature/heading-rate; not exact."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.134904,
+          38.6481618
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "turn_4",
+        "role": "corner",
+        "seq": 4,
+        "name": "Turn 4",
+        "pipeline_use": "corner reference: per-corner min-speed, apex timing, mini-sector splits",
+        "approximate": true,
+        "confidence": "seed_approximate",
+        "marker-color": "#6a3d9a",
+        "marker-symbol": "4",
+        "note": "APPROXIMATE apex seed - derive true apex from GPS curvature/heading-rate; not exact."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.1346133,
+          38.6481926
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "turn_5",
+        "role": "corner",
+        "seq": 5,
+        "name": "Turn 5",
+        "pipeline_use": "corner reference: per-corner min-speed, apex timing, mini-sector splits",
+        "approximate": true,
+        "confidence": "seed_approximate",
+        "marker-color": "#6a3d9a",
+        "marker-symbol": "5",
+        "note": "APPROXIMATE apex seed - derive true apex from GPS curvature/heading-rate; not exact."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.1344518,
+          38.6484841
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "turn_6",
+        "role": "corner",
+        "seq": 6,
+        "name": "Turn 6",
+        "pipeline_use": "corner reference: per-corner min-speed, apex timing, mini-sector splits",
+        "approximate": true,
+        "confidence": "seed_approximate",
+        "marker-color": "#6a3d9a",
+        "marker-symbol": "6",
+        "note": "APPROXIMATE apex seed - derive true apex from GPS curvature/heading-rate; not exact."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.1347461,
+          38.6497594
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "turn_7",
+        "role": "corner",
+        "seq": 7,
+        "name": "Turn 7",
+        "pipeline_use": "corner reference: per-corner min-speed, apex timing, mini-sector splits",
+        "approximate": true,
+        "confidence": "seed_approximate",
+        "marker-color": "#6a3d9a",
+        "marker-symbol": "7",
+        "note": "APPROXIMATE apex seed - derive true apex from GPS curvature/heading-rate; not exact."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.1349902,
+          38.6497818
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "turn_8",
+        "role": "corner",
+        "seq": 8,
+        "name": "Turn 8",
+        "pipeline_use": "corner reference: per-corner min-speed, apex timing, mini-sector splits",
+        "approximate": true,
+        "confidence": "seed_approximate",
+        "marker-color": "#6a3d9a",
+        "marker-symbol": "8",
+        "note": "APPROXIMATE apex seed - derive true apex from GPS curvature/heading-rate; not exact."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.135026,
+          38.649622
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "turn_9",
+        "role": "corner",
+        "seq": 9,
+        "name": "Turn 9",
+        "pipeline_use": "corner reference: per-corner min-speed, apex timing, mini-sector splits",
+        "approximate": true,
+        "confidence": "seed_approximate",
+        "marker-color": "#6a3d9a",
+        "marker-symbol": "9",
+        "note": "APPROXIMATE apex seed - derive true apex from GPS curvature/heading-rate; not exact."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.1348251,
+          38.6495856
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "turn_10",
+        "role": "corner",
+        "seq": 10,
+        "name": "Turn 10",
+        "pipeline_use": "corner reference: per-corner min-speed, apex timing, mini-sector splits",
+        "approximate": true,
+        "confidence": "seed_approximate",
+        "marker-color": "#6a3d9a",
+        "marker-symbol": "10",
+        "note": "APPROXIMATE apex seed - derive true apex from GPS curvature/heading-rate; not exact."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.1348574,
+          38.6492829
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "turn_11",
+        "role": "corner",
+        "seq": 11,
+        "name": "Turn 11",
+        "pipeline_use": "corner reference: per-corner min-speed, apex timing, mini-sector splits",
+        "approximate": true,
+        "confidence": "seed_approximate",
+        "marker-color": "#6a3d9a",
+        "marker-symbol": "11",
+        "note": "APPROXIMATE apex seed - derive true apex from GPS curvature/heading-rate; not exact."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.134861,
+          38.648784
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "sector_2_gate",
+        "role": "sector_split_gate",
+        "name": "Sector 2 split (after T5)",
+        "derived": true,
+        "from_best_lap_frac": 0.45,
+        "heading_deg": 88.3,
+        "stroke": "#00e5ff",
+        "stroke-width": 3,
+        "note": "Derived: perpendicular split gate at this fraction of the validated best lap. Reusable across sessions."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -90.13445946366895,
+            38.64846409462141
+          ],
+          [
+            -90.13457456243616,
+            38.64846681505713
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "sector_3_gate",
+        "role": "sector_split_gate",
+        "name": "Sector 3 split (after T9)",
+        "derived": true,
+        "from_best_lap_frac": 0.83,
+        "heading_deg": 272.9,
+        "stroke": "#00e5ff",
+        "stroke-width": 3,
+        "note": "Derived: perpendicular split gate at this fraction of the validated best lap. Reusable across sessions."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -90.13495729536295,
+            38.6494778197323
+          ],
+          [
+            -90.13484229163048,
+            38.64948237373024
+          ]
+        ]
+      }
+    }
+  ],
+  "_README": "APPROXIMATE / ROUGH SKETCH ONLY. Points and paths were hand-placed on Google Maps satellite imagery to convey LAYOUT, ROUTING, and corner SEQUENCE, not precise geometry. They are NOT survey data and NOT the actual driven line. DO NOT treat any coordinate, vertex, path shape, length, or bearing as exact. Google imagery coords differ from the phone GPS by several meters. USE ONLY AS SEEDS: snap each landmark/apex to the nearest point on the real GPS track and validate by data (S/F gate via lap-time RMSE; pit exit/entrance via speed/heading; corner apexes via curvature/heading-rate peaks). The pit-lane LineStrings are coarse few-vertex sketches of which side the route loops, NOT a smooth or accurate path. Direction of travel is counterclockwise (turn order T1..T11)."
+}

@@ -1,0 +1,69 @@
+{
+  "venue": "gateway-kartplex",
+  "zip_name": "World_Wide_Technology_Raceway-2026-06-25_21-02-36.zip",
+  "zip_stem": "World_Wide_Technology_Raceway-2026-06-25_21-02-36",
+  "session_dir": "/Users/nathanverrill/karting-repos/karting/ingestion/raw_sessions/World_Wide_Technology_Raceway-2026-06-25_21-02-36",
+  "metadata": {
+    "version": "3",
+    "device": "iPhone 17 Pro Max",
+    "recording_epoch_ms": 1782421356199,
+    "recording_time": "2026-06-25_21-02-36",
+    "timezone": "America/Chicago",
+    "platform": "ios",
+    "app_version": "1.60.1",
+    "standardisation": "false",
+    "platform_version": "26.5.1",
+    "sensor_rates_ms": {
+      "Accelerometer": 10,
+      "Gravity": 10,
+      "Gyroscope": 10,
+      "Orientation": 10,
+      "Magnetometer": 10,
+      "Compass": 10,
+      "Barometer": 0,
+      "Location": 0,
+      "Heart Rate": 10,
+      "Wrist Motion": 10,
+      "Watch Location": 10,
+      "Watch Barometer": 10,
+      "Watch Magnetometer": 10,
+      "Watch Compass": 10,
+      "Microphone": 100,
+      "Pedometer": 10,
+      "Activity": 0,
+      "Headphone": 10,
+      "Annotation": null,
+      "MagnetometerUncalibrated": 10,
+      "GyroscopeUncalibrated": 10,
+      "AccelerometerUncalibrated": 10
+    }
+  },
+  "required_files": {
+    "present": [
+      "Location.csv",
+      "Accelerometer.csv",
+      "Gyroscope.csv",
+      "Gravity.csv",
+      "Microphone.csv",
+      "Headphone.csv",
+      "Microphone.mp4"
+    ],
+    "missing": []
+  },
+  "row_counts": {
+    "Location.csv": 2197,
+    "Accelerometer.csv": 218218,
+    "Gyroscope.csv": 218218,
+    "Gravity.csv": 218218,
+    "Microphone.csv": 21036,
+    "Headphone.csv": 50095
+  },
+  "timesheet_json": [
+    "2026-06-25_1440.json",
+    "2026-06-25_1500.json"
+  ],
+  "n_timesheets": 2,
+  "ignored": [
+    ".DS_Store"
+  ]
+}

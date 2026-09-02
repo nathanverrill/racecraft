@@ -1,0 +1,25 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Sensor Logger raw recordings (large; keep on disk, not in git)
+ingestion/inbox/**/*.zip
+ingestion/inbox/**/*.sqlite
+ingestion/raw_sessions/
+
+# Generated media / large outputs (Stage B)
+*.mp4
+*.mov
+ingestion/output/**/_frames/
+
+# OS / editor cruft
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# Stage B render audio (large, regenerable from raw)
+ingestion/output/**/render/*.wav

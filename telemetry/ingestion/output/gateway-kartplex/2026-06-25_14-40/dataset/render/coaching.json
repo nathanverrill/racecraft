@@ -1,0 +1,462 @@
+{
+  "venue": "gateway-kartplex",
+  "session_key": "2026-06-25_14-40",
+  "debrief": {
+    "headline": "Best lap 40.677s \u00b7 theoretical best 39.568s \u00b7 1.11s left on the table by not stringing your best sectors together.",
+    "consistency_overall": "7/14 laps within 3% of your best \u2014 work on repeatability before chasing peak pace.",
+    "biggest_opportunity": "S1 (S/F->T5): ~1.27s/lap available (pace gap 0.41s + inconsistency cost 0.86s).",
+    "weakest_sector": "S3 (T9->S/F) \u2014 consistency 52/100 (\u03c3 0.37s).",
+    "weakest_turns": [
+      "T1 (score 0/100, line \u03c3 12.1m, apex 21\u00b13 mph)",
+      "T7 (score 8/100, line \u03c3 9.3m, apex 18\u00b13 mph)",
+      "T3 (score 19/100, line \u03c3 13.2m, apex 26\u00b12 mph)"
+    ],
+    "strongest_turns": [
+      "T11 (score 82/100)",
+      "T4 (score 65/100)",
+      "T6 (score 60/100)"
+    ]
+  },
+  "next_session_strategy": [
+    {
+      "priority": 1,
+      "where": "T1 (S1)",
+      "why": "lowest consistency (0/100)",
+      "do": "Inconsistent line \u2014 pick ONE reference (brake marker, apex kerb, exit point) and repeat it every lap."
+    },
+    {
+      "priority": 2,
+      "where": "T7 (S3)",
+      "why": "lowest consistency (8/100)",
+      "do": "Inconsistent line \u2014 pick ONE reference (brake marker, apex kerb, exit point) and repeat it every lap."
+    },
+    {
+      "priority": 3,
+      "where": "T3 (S2)",
+      "why": "lowest consistency (19/100)",
+      "do": "Inconsistent line \u2014 pick ONE reference (brake marker, apex kerb, exit point) and repeat it every lap."
+    },
+    {
+      "priority": 4,
+      "where": "S1 (S/F->T5)",
+      "why": "most lap-time available (~1.27s)",
+      "do": "Prioritise this sector: drive 3-4 laps focusing only here, same line every lap, then add pace."
+    }
+  ],
+  "session_plan": [
+    "Out-lap + 2 laps: scrub in, fix ONE reference per corner (brake marker/apex).",
+    "Next 4 laps: focus ONLY on Turn 1 \u2014 same line, same brake point, same minimum speed.",
+    "Next 4 laps: attack S1 (S/F->T5) \u2014 carry minimum speed, early throttle.",
+    "Final laps: put it together, chase the theoretical-best by linking best sectors."
+  ],
+  "sector_consistency": {
+    "sector_1": {
+      "name": "S1 (S/F->T5)",
+      "cv_pct": 2.3,
+      "std_s": 0.452,
+      "consistency_score": 81.0
+    },
+    "sector_2": {
+      "name": "S2 (straight->T9)",
+      "cv_pct": 2.5,
+      "std_s": 0.379,
+      "consistency_score": 79.0
+    },
+    "sector_3": {
+      "name": "S3 (T9->S/F)",
+      "cv_pct": 5.8,
+      "std_s": 0.371,
+      "consistency_score": 52.0
+    }
+  },
+  "turn_consistency": [
+    {
+      "num": 1,
+      "name": "Turn 1",
+      "sector": "S1",
+      "dist_frac": 0.108,
+      "apex_speed_mph_mean": 20.8,
+      "apex_speed_mph_std": 2.58,
+      "apex_speed_cv": 0.124,
+      "line_spread_m": 12.11,
+      "entry_speed_mph": 27.6,
+      "exit_speed_mph": 22.2,
+      "brake_point_std_m": 5.79,
+      "consistency_score": 0.0,
+      "n_laps": 9
+    },
+    {
+      "num": 2,
+      "name": "Turn 2",
+      "sector": "S1",
+      "dist_frac": 0.235,
+      "apex_speed_mph_mean": 25.9,
+      "apex_speed_mph_std": 2.23,
+      "apex_speed_cv": 0.086,
+      "line_spread_m": 11.02,
+      "entry_speed_mph": 30.0,
+      "exit_speed_mph": 26.7,
+      "brake_point_std_m": 13.42,
+      "consistency_score": 24.0,
+      "n_laps": 9
+    },
+    {
+      "num": 3,
+      "name": "Turn 3",
+      "sector": "S2",
+      "dist_frac": 0.359,
+      "apex_speed_mph_mean": 26.0,
+      "apex_speed_mph_std": 2.33,
+      "apex_speed_cv": 0.09,
+      "line_spread_m": 13.22,
+      "entry_speed_mph": 26.9,
+      "exit_speed_mph": 27.3,
+      "brake_point_std_m": 3.78,
+      "consistency_score": 19.0,
+      "n_laps": 9
+    },
+    {
+      "num": 4,
+      "name": "Turn 4",
+      "sector": "S2",
+      "dist_frac": 0.4,
+      "apex_speed_mph_mean": 27.0,
+      "apex_speed_mph_std": 0.73,
+      "apex_speed_cv": 0.027,
+      "line_spread_m": 9.78,
+      "entry_speed_mph": 27.2,
+      "exit_speed_mph": 29.2,
+      "brake_point_std_m": 3.52,
+      "consistency_score": 65.0,
+      "n_laps": 9
+    },
+    {
+      "num": 5,
+      "name": "Turn 5",
+      "sector": "S2",
+      "dist_frac": 0.453,
+      "apex_speed_mph_mean": 29.9,
+      "apex_speed_mph_std": 1.54,
+      "apex_speed_cv": 0.052,
+      "line_spread_m": 10.15,
+      "entry_speed_mph": 29.4,
+      "exit_speed_mph": 34.3,
+      "brake_point_std_m": 16.16,
+      "consistency_score": 49.0,
+      "n_laps": 9
+    },
+    {
+      "num": 6,
+      "name": "Turn 6",
+      "sector": "S3",
+      "dist_frac": 0.685,
+      "apex_speed_mph_mean": 41.3,
+      "apex_speed_mph_std": 1.02,
+      "apex_speed_cv": 0.025,
+      "line_spread_m": 16.54,
+      "entry_speed_mph": 42.1,
+      "exit_speed_mph": 41.2,
+      "brake_point_std_m": 19.84,
+      "consistency_score": 60.0,
+      "n_laps": 9
+    },
+    {
+      "num": 7,
+      "name": "Turn 7",
+      "sector": "S3",
+      "dist_frac": 0.774,
+      "apex_speed_mph_mean": 18.2,
+      "apex_speed_mph_std": 3.34,
+      "apex_speed_cv": 0.184,
+      "line_spread_m": 9.3,
+      "entry_speed_mph": 22.5,
+      "exit_speed_mph": 21.2,
+      "brake_point_std_m": 22.31,
+      "consistency_score": 8.0,
+      "n_laps": 9
+    },
+    {
+      "num": 8,
+      "name": "Turn 8",
+      "sector": "S3",
+      "dist_frac": 0.804,
+      "apex_speed_mph_mean": 21.3,
+      "apex_speed_mph_std": 1.74,
+      "apex_speed_cv": 0.082,
+      "line_spread_m": 8.87,
+      "entry_speed_mph": 19.3,
+      "exit_speed_mph": 23.0,
+      "brake_point_std_m": 15.13,
+      "consistency_score": 34.0,
+      "n_laps": 9
+    },
+    {
+      "num": 9,
+      "name": "Turn 9",
+      "sector": "S3",
+      "dist_frac": 0.812,
+      "apex_speed_mph_mean": 21.7,
+      "apex_speed_mph_std": 1.69,
+      "apex_speed_cv": 0.078,
+      "line_spread_m": 9.07,
+      "entry_speed_mph": 20.1,
+      "exit_speed_mph": 23.7,
+      "brake_point_std_m": 11.56,
+      "consistency_score": 36.0,
+      "n_laps": 9
+    },
+    {
+      "num": 10,
+      "name": "Turn 10",
+      "sector": "S3",
+      "dist_frac": 0.866,
+      "apex_speed_mph_mean": 24.8,
+      "apex_speed_mph_std": 1.67,
+      "apex_speed_cv": 0.068,
+      "line_spread_m": 7.81,
+      "entry_speed_mph": 24.1,
+      "exit_speed_mph": 29.2,
+      "brake_point_std_m": 8.3,
+      "consistency_score": 46.0,
+      "n_laps": 9
+    },
+    {
+      "num": 11,
+      "name": "Turn 11",
+      "sector": "S3",
+      "dist_frac": 0.956,
+      "apex_speed_mph_mean": 33.0,
+      "apex_speed_mph_std": 0.9,
+      "apex_speed_cv": 0.027,
+      "line_spread_m": 4.45,
+      "entry_speed_mph": 32.7,
+      "exit_speed_mph": 35.6,
+      "brake_point_std_m": 15.11,
+      "consistency_score": 82.0,
+      "n_laps": 9
+    }
+  ],
+  "best_practice_cues": [
+    {
+      "num": 1,
+      "name": "Turn 1",
+      "sector": "S1",
+      "consistency_score": 0.0,
+      "cues": [
+        "Inconsistent line \u2014 pick ONE reference (brake marker, apex kerb, exit point) and repeat it every lap.",
+        "Apex speed varies lap-to-lap \u2014 commit to a repeatable minimum speed; trail-brake smoothly to the apex rather than braking different amounts each lap.",
+        "Braking point wanders \u2014 use a fixed visual brake marker."
+      ]
+    },
+    {
+      "num": 2,
+      "name": "Turn 2",
+      "sector": "S1",
+      "consistency_score": 24.0,
+      "cues": [
+        "Inconsistent line \u2014 pick ONE reference (brake marker, apex kerb, exit point) and repeat it every lap.",
+        "Weak exit acceleration \u2014 aim to be at a wide-open throttle earlier; a good exit pays down the whole next straight.",
+        "Braking point wanders \u2014 use a fixed visual brake marker."
+      ]
+    },
+    {
+      "num": 3,
+      "name": "Turn 3",
+      "sector": "S2",
+      "consistency_score": 19.0,
+      "cues": [
+        "Inconsistent line \u2014 pick ONE reference (brake marker, apex kerb, exit point) and repeat it every lap."
+      ]
+    },
+    {
+      "num": 4,
+      "name": "Turn 4",
+      "sector": "S2",
+      "consistency_score": 65.0,
+      "cues": [
+        "Inconsistent line \u2014 pick ONE reference (brake marker, apex kerb, exit point) and repeat it every lap."
+      ]
+    },
+    {
+      "num": 5,
+      "name": "Turn 5",
+      "sector": "S2",
+      "consistency_score": 49.0,
+      "cues": [
+        "Inconsistent line \u2014 pick ONE reference (brake marker, apex kerb, exit point) and repeat it every lap.",
+        "Braking point wanders \u2014 use a fixed visual brake marker."
+      ]
+    },
+    {
+      "num": 6,
+      "name": "Turn 6",
+      "sector": "S3",
+      "consistency_score": 60.0,
+      "cues": [
+        "Inconsistent line \u2014 pick ONE reference (brake marker, apex kerb, exit point) and repeat it every lap.",
+        "Weak exit acceleration \u2014 aim to be at a wide-open throttle earlier; a good exit pays down the whole next straight.",
+        "Braking point wanders \u2014 use a fixed visual brake marker."
+      ]
+    },
+    {
+      "num": 7,
+      "name": "Turn 7",
+      "sector": "S3",
+      "consistency_score": 8.0,
+      "cues": [
+        "Inconsistent line \u2014 pick ONE reference (brake marker, apex kerb, exit point) and repeat it every lap.",
+        "Apex speed varies lap-to-lap \u2014 commit to a repeatable minimum speed; trail-brake smoothly to the apex rather than braking different amounts each lap.",
+        "Braking point wanders \u2014 use a fixed visual brake marker."
+      ]
+    },
+    {
+      "num": 8,
+      "name": "Turn 8",
+      "sector": "S3",
+      "consistency_score": 34.0,
+      "cues": [
+        "Inconsistent line \u2014 pick ONE reference (brake marker, apex kerb, exit point) and repeat it every lap.",
+        "Braking point wanders \u2014 use a fixed visual brake marker."
+      ]
+    },
+    {
+      "num": 9,
+      "name": "Turn 9",
+      "sector": "S3",
+      "consistency_score": 36.0,
+      "cues": [
+        "Inconsistent line \u2014 pick ONE reference (brake marker, apex kerb, exit point) and repeat it every lap.",
+        "Braking point wanders \u2014 use a fixed visual brake marker."
+      ]
+    },
+    {
+      "num": 10,
+      "name": "Turn 10",
+      "sector": "S3",
+      "consistency_score": 46.0,
+      "cues": [
+        "Inconsistent line \u2014 pick ONE reference (brake marker, apex kerb, exit point) and repeat it every lap.",
+        "Braking point wanders \u2014 use a fixed visual brake marker."
+      ]
+    },
+    {
+      "num": 11,
+      "name": "Turn 11",
+      "sector": "S3",
+      "consistency_score": 82.0,
+      "cues": [
+        "Inconsistent line \u2014 pick ONE reference (brake marker, apex kerb, exit point) and repeat it every lap.",
+        "Braking point wanders \u2014 use a fixed visual brake marker."
+      ]
+    }
+  ],
+  "incidents": {
+    "incident_laps": [
+      {
+        "lap": 1,
+        "lap_time": 42.739,
+        "lost_s": 2.06,
+        "peak_g": 4.1,
+        "likely": "spin / big time loss"
+      },
+      {
+        "lap": 3,
+        "lap_time": 49.854,
+        "lost_s": 9.18,
+        "peak_g": 4.8,
+        "likely": "spin / big time loss"
+      },
+      {
+        "lap": 10,
+        "lap_time": 42.749,
+        "lost_s": 2.07,
+        "peak_g": 4.9,
+        "likely": "spin / big time loss"
+      },
+      {
+        "lap": 12,
+        "lap_time": 53.626,
+        "lost_s": 12.95,
+        "peak_g": 7.2,
+        "likely": "spin / big time loss"
+      },
+      {
+        "lap": 14,
+        "lap_time": 47.088,
+        "lost_s": 6.41,
+        "peak_g": 4.3,
+        "likely": "spin / big time loss"
+      }
+    ],
+    "n_clean_laps": 9,
+    "n_laps": 14,
+    "impact_locations": [
+      {
+        "t": 504.51,
+        "g": 7.4,
+        "nearest_turn": "T9"
+      },
+      {
+        "t": 540.67,
+        "g": 7.2,
+        "nearest_turn": "T7"
+      },
+      {
+        "t": 416.31,
+        "g": 7.1,
+        "nearest_turn": "T7"
+      },
+      {
+        "t": 663.39,
+        "g": 5.8,
+        "nearest_turn": "T2"
+      },
+      {
+        "t": 509.73,
+        "g": 5.5,
+        "nearest_turn": "T11"
+      },
+      {
+        "t": 388.33,
+        "g": 5.4,
+        "nearest_turn": "T1"
+      },
+      {
+        "t": 254.04,
+        "g": 5.1,
+        "nearest_turn": "T9"
+      },
+      {
+        "t": 377.54,
+        "g": 4.9,
+        "nearest_turn": "T6"
+      },
+      {
+        "t": 462.39,
+        "g": 4.9,
+        "nearest_turn": "T6"
+      },
+      {
+        "t": 655.94,
+        "g": 4.9,
+        "nearest_turn": "T1"
+      },
+      {
+        "t": 171.19,
+        "g": 4.8,
+        "nearest_turn": "T9"
+      },
+      {
+        "t": 312.49,
+        "g": 4.7,
+        "nearest_turn": "T2"
+      }
+    ]
+  },
+  "honesty_notes": {
+    "lookahead": "head-ORIENTATION (AirPods yaw) proxy for gaze, approximate.",
+    "rpm": "engine RPM not reliably recoverable from this audio; excluded.",
+    "line_spread": "apex-position scatter (m); dominated by ~3.5m GPS noise, so used only as a soft secondary signal - the consistency score is driven mainly by repeatable APEX SPEED.",
+    "incidents": "incident laps = significantly slower laps (>5% off best, i.e. spins / big time loss); excluded from consistency. Impact g-events (kerb strikes, the hairpin wall hit) are reported as LOCATIONS, not used to invalidate laps."
+  }
+}

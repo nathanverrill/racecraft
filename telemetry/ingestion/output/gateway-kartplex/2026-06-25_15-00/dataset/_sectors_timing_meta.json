@@ -1,0 +1,87 @@
+{
+  "n_laps": 13,
+  "n_valid_sector_laps": 13,
+  "n_laps_with_time": 13,
+  "split_fracs": [
+    0.45,
+    0.83
+  ],
+  "snaps": {
+    "sf_top": {
+      "snap_idx": 12391,
+      "snap_dist_m": 2.1,
+      "se": 123.91
+    },
+    "sf_bottom": {
+      "snap_idx": 8215,
+      "snap_dist_m": 0.1,
+      "se": 82.15
+    },
+    "pit_exit": {
+      "snap_idx": 1133,
+      "snap_dist_m": 3.0,
+      "se": 11.33
+    },
+    "pit_entrance": {
+      "snap_idx": 41649,
+      "snap_dist_m": 0.6,
+      "se": 416.49
+    },
+    "turn_1": {
+      "snap_idx": 60135,
+      "snap_dist_m": 0.1,
+      "se": 601.35
+    },
+    "turn_2": {
+      "snap_idx": 30829,
+      "snap_dist_m": 0.3,
+      "se": 308.29
+    },
+    "turn_3": {
+      "snap_idx": 52964,
+      "snap_dist_m": 0.2,
+      "se": 529.64
+    },
+    "turn_4": {
+      "snap_idx": 1465,
+      "snap_dist_m": 0.5,
+      "se": 14.65
+    },
+    "turn_5": {
+      "snap_idx": 61923,
+      "snap_dist_m": 0.2,
+      "se": 619.23
+    },
+    "turn_6": {
+      "snap_idx": 6849,
+      "snap_dist_m": 0.2,
+      "se": 68.49
+    },
+    "turn_7": {
+      "snap_idx": 46253,
+      "snap_dist_m": 0.3,
+      "se": 462.53
+    },
+    "turn_8": {
+      "snap_idx": 34019,
+      "snap_dist_m": 0.1,
+      "se": 340.19
+    },
+    "turn_9": {
+      "snap_idx": 20705,
+      "snap_dist_m": 0.7,
+      "se": 207.05
+    },
+    "turn_10": {
+      "snap_idx": 29297,
+      "snap_dist_m": 1.4,
+      "se": 292.97
+    },
+    "turn_11": {
+      "snap_idx": 63940,
+      "snap_dist_m": 0.8,
+      "se": 639.4
+    }
+  },
+  "crossing_sign": -1
+}
