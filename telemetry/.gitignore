@@ -7,6 +7,8 @@ __pycache__/
 
 # Sensor Logger raw recordings (large; keep on disk, not in git)
 ingestion/inbox/**/*.zip
+# ...except the trimmed sample recording used by the README quickstart
+!ingestion/inbox/gateway-kartplex/World_Wide_Technology_Raceway-2026-06-25_21-02-36.zip
 ingestion/inbox/**/*.sqlite
 ingestion/raw_sessions/
 

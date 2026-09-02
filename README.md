@@ -28,20 +28,17 @@ cd racecraft/telemetry
 python3 -m venv .venv
 .venv/bin/pip install -r ingestion/requirements.txt
 
-# 1. download the sample recording (90 MB) into ingestion/inbox/gateway-kartplex/
-.venv/bin/python fetch_sample_data.py
-
-# 2. Stage A: recording in, validated per-session dataset out (about a minute)
+# 1. Stage A: recording in, validated per-session dataset out (about a minute)
 .venv/bin/python ingestion/kart/run.py
 
-# 3. Stage B: analytics, coaching, ghost lap, dashboards
+# 2. Stage B: analytics, coaching, ghost lap, dashboards
 .venv/bin/python ingestion/kart/run_stage_b.py
 
-# 4. print the debrief and next-session strategy
+# 3. print the debrief and next-session strategy
 .venv/bin/python ingestion/kart/show_coaching.py
 ```
 
-Step 4 prints, per session, the headline gap to a theoretical best lap, sector
+Step 3 prints, per session, the headline gap to a theoretical best lap, sector
 consistency scores, a ranked list of corners to work on with a concrete cue for each,
 a lap-by-lap session plan, and the incident laps that were excluded. The same content
 is in `ingestion/output/gateway-kartplex/<session>/dataset/coaching.json`.
@@ -53,9 +50,10 @@ For the interactive dashboards, serve the output directory and open a session's
 .venv/bin/python -m http.server 8800 -d ingestion/output
 ```
 
-The sample recording is two ten-minute sessions at Gateway Kartplex on 2026-06-25.
-The venue geometry and both timing sheets are already in the repo, so nothing else
-needs to be transcribed.
+The sample recording is in the repo at `ingestion/inbox/gateway-kartplex/`: one
+Sensor Logger export covering two ten-minute sessions at Gateway Kartplex on
+2026-06-25, trimmed to the eight files the pipeline reads (42 MB). The venue geometry
+and both timing sheets are alongside it, so nothing needs downloading or transcribing.
 
 ## Repository layout
 
