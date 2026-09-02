@@ -276,8 +276,13 @@ button.reset:hover{border-color:var(--bad);color:var(--txt)}
 <div class="sub">A phone in a pocket and AirPods in a helmet, turned into a debrief a driver can use.</div></header>
 <main>
 <div id="results"></div>
+<h2>Sessions in the inbox</h2>
+<p>One Sensor Logger recording is waiting to be analysed. Press the button and the pipeline output streams below; you land on the coaching debrief when it finishes.</p>
+<div class="card"><table><tr><th>Date</th><th>Time</th><th>Session</th><th>Driver</th><th>Laps</th><th>Best (sheet)</th></tr>__INBOX__</table></div>
+<button id="go">Begin analysis</button><button id="reset" class="reset" title="Delete the generated dataset and dashboards so you can run from scratch">Reset</button><span class="status" id="status"></span>
+<div id="log"></div>
 <h2>What this does</h2>
-<p>The inbox holds one Sensor Logger recording from a rental-kart session at Gateway Kartplex: 100&nbsp;Hz accelerometer and gyroscope, 1&nbsp;Hz GPS, in-helmet audio and head motion, plus the venue's printed timing sheet for each stint. Pressing the button runs the whole pipeline on it, about a minute, and every step validates itself against the timing sheet.</p>
+<p>The recording comes from a rental-kart session at Gateway Kartplex: 100&nbsp;Hz accelerometer and gyroscope, 1&nbsp;Hz GPS, in-helmet audio and head motion, plus the venue's printed timing sheet for each stint. The pipeline runs in about a minute and every step validates itself against the timing sheet.</p>
 <div class="grid">
 <div class="card"><h3>Stage A: recording to dataset</h3><ol>__STAGE_A__</ol></div>
 <div class="card"><h3>Stage B: analysis and coaching</h3><ol>__STAGE_B__</ol></div>
@@ -289,10 +294,6 @@ button.reset:hover{border-color:var(--bad);color:var(--txt)}
 </div>
 <h2>Raw data</h2>
 <div class="card raw">__RAW__</div>
-<h2>Sessions in the inbox</h2>
-<div class="card"><table><tr><th>Date</th><th>Time</th><th>Session</th><th>Driver</th><th>Laps</th><th>Best (sheet)</th></tr>__INBOX__</table></div>
-<button id="go">Begin analysis</button><button id="reset" class="reset" title="Delete the generated dataset and dashboards so you can run from scratch">Reset</button><span class="status" id="status"></span>
-<div id="log"></div>
 </main>
 <script>
 const go=document.getElementById('go'),reset=document.getElementById('reset'),log=document.getElementById('log'),
