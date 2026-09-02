@@ -2,8 +2,8 @@
 
 Exploratory work on racing telemetry, analysis and AI tooling. Two subjects:
 
-- **Karting.** Rental-kart sessions recorded with a phone (Sensor Logger app: 100 Hz
-  IMU, 1 Hz GPS) and AirPods (engine audio, head motion), turned into lap times,
+- **Karting.** Rental-kart sessions recorded with a phone running the Sensor Logger
+  app (100 Hz IMU, 1 Hz GPS) and AirPods (engine audio, head motion), turned into lap times,
   sector splits, coaching output and replay visuals. Validated against the venue's
   printed timing sheet.
 - **Formula 1.** Public telemetry via FastF1, a scraped corpus of race commentary,
@@ -15,7 +15,7 @@ Exploratory work on racing telemetry, analysis and AI tooling. Two subjects:
 
 ## Quickstart: see the coaching analysis with one command
 
-<!-- screenshot: docs/screenshot.png -->
+![Coaching debrief](telemetry/ingestion/kart/assets/kart-debrief.png)
 
 The karting pipeline takes one Sensor Logger recording from a rental-kart session
 and produces a coaching debrief: where the time is, which corners are inconsistent,
@@ -31,6 +31,11 @@ pipeline output streams into the page, about a minute. When it finishes, each se
 appears as a card with its headline, biggest opportunity and top three corners to work
 on, with links into the dashboards: onboard replay, coaching debrief, ghost lap against
 your theoretical best, cockpit view and sector 1 breakdown.
+
+![Sector 1 study](telemetry/ingestion/kart/assets/kart-sector-1.png)
+
+The home page also previews the raw data: sample rows from each channel of the
+Sensor Logger export, straight out of the ZIP.
 
 To build the image yourself instead of pulling it:
 

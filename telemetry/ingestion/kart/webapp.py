@@ -11,11 +11,14 @@ No dependencies beyond the standard library.
 from __future__ import annotations
 
 import argparse
+import csv
 import html
+import io
 import json
 import subprocess
 import sys
 import threading
+import zipfile
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -23,6 +26,19 @@ HERE = Path(__file__).resolve().parent          # ingestion/kart
 ING = HERE.parent                                # ingestion
 INBOX = ING / "inbox"
 OUTPUT = ING / "output"
+ASSETS = HERE / "assets"
+
+# Channels previewed on the home page: file -> (label, columns to show)
+PREVIEW_CHANNELS = [
+    ("Location.csv", "GPS, 1 Hz", ["latitude", "longitude", "speed", "bearing", "horizontalAccuracy"]),
+    ("Accelerometer.csv", "Accelerometer, 100 Hz", ["x", "y", "z"]),
+    ("Gyroscope.csv", "Gyroscope, 100 Hz", ["x", "y", "z"]),
+    ("Gravity.csv", "Gravity, 100 Hz", ["x", "y", "z"]),
+    ("Headphone.csv", "AirPods head motion, 100 Hz", ["yaw", "pitch", "roll", "rotationRateZ"]),
+    ("Microphone.csv", "Microphone loudness, 10 Hz", ["dBFS"]),
+]
+PREVIEW_ROWS = 4
+PREVIEW_AT_S = 300.0        # sample rows from this far into the recording (mid-stint)
 
 DASHBOARDS = [
     ("onboard", "Onboard"), ("coaching", "Coaching"), ("replay", "Replay"),
@@ -50,6 +66,53 @@ STAGE_B_STEPS = [
     ("Ghost", "your best lap against an ideal lap stitched from best sectors"),
     ("Dashboards", "onboard, coaching, replay, ghost, cockpit and sector pages"),
 ]
+
+
+_preview_cache: dict = {}
+
+
+def data_preview(venue: str) -> dict:
+    """Metadata and a few sample rows per channel, read straight from the ZIP."""
+    if venue in _preview_cache:
+        return _preview_cache[venue]
+    zips = sorted((INBOX / venue).glob("*.zip"))
+    if not zips:
+        return {}
+    out: dict = {"zip": zips[0].name, "size_mb": zips[0].stat().st_size / 1e6, "channels": []}
+    with zipfile.ZipFile(zips[0]) as z:
+        names = set(z.namelist())
+        if "Metadata.csv" in names:
+            meta = next(csv.DictReader(io.TextIOWrapper(z.open("Metadata.csv"), encoding="utf-8")))
+            out["device"] = meta.get("device name")
+            out["app_version"] = meta.get("appVersion")
+            out["recorded"] = meta.get("recording time")
+            out["timezone"] = meta.get("recording timezone")
+        for fname, label, cols in PREVIEW_CHANNELS:
+            if fname not in names:
+                continue
+            rows, n = [], 0
+            with io.TextIOWrapper(z.open(fname), encoding="utf-8") as f:
+                for rec in csv.DictReader(f):
+                    n += 1
+                    try:
+                        t = float(rec.get("seconds_elapsed", "nan"))
+                    except ValueError:
+                        continue
+                    if t >= PREVIEW_AT_S and len(rows) < PREVIEW_ROWS:
+                        rows.append([f"{t:.2f}"] + [_short(rec.get(c, "")) for c in cols])
+                    if len(rows) >= PREVIEW_ROWS and n > 200_000:
+                        break
+            out["channels"].append({"file": fname, "label": label, "rows_read": n,
+                                    "cols": ["t (s)"] + cols, "rows": rows})
+    _preview_cache[venue] = out
+    return out
+
+
+def _short(v: str) -> str:
+    try:
+        return f"{float(v):.6g}"
+    except ValueError:
+        return v
 
 
 class Run:
@@ -155,7 +218,9 @@ PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8">
 <style>
 :root{--bg:#0b0e13;--card:#151a22;--line:#232b36;--txt:#e7edf5;--dim:#8b97a8;--accent:#ff5c39;--good:#31d67a;--bad:#ff5c5c}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
-header{padding:34px 28px 14px;border-bottom:1px solid var(--line)}
+header{position:relative;padding:54px 28px 26px;border-bottom:1px solid var(--line);overflow:hidden;background:#0b0e13 url(/assets/kart-sector-1.png) center 30%/cover no-repeat}
+header:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(11,14,19,.96) 0%,rgba(11,14,19,.86) 45%,rgba(11,14,19,.55) 100%)}
+header>*{position:relative}
 h1{margin:0;font-size:26px}.sub{color:var(--dim);margin-top:6px;font-size:13px}
 main{padding:24px 28px 60px;max-width:1100px;margin:0 auto}
 h2{font-size:18px;border-left:3px solid var(--accent);padding-left:10px;margin:30px 0 12px}
@@ -177,6 +242,12 @@ button:disabled{opacity:.5;cursor:default}
 .sess ul{margin:8px 0 12px;padding-left:18px;font-size:13px;color:#c9d2de}
 .btns a{display:inline-block;background:#0f141b;border:1px solid var(--line);border-radius:8px;padding:6px 11px;margin:3px 4px 0 0;color:var(--txt);text-decoration:none;font-size:13px}
 .btns a.primary{border-color:var(--accent)}.btns a:hover{border-color:var(--accent)}
+.shots{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:800px){.shots{grid-template-columns:1fr}}
+.shots img{width:100%;border:1px solid var(--line);border-radius:10px;display:block}
+.shots .cap{color:var(--dim);font-size:12.5px;margin-top:6px}
+.raw .meta{color:var(--dim);font-size:13px;margin-bottom:10px}
+.chan{margin:14px 0 0}.chan .lbl{font-size:13px;font-weight:600}.chan .lbl span{color:var(--dim);font-weight:400;margin-left:8px;font-size:12px}
+.chan table{font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;margin-top:4px}.chan td,.chan th{padding:3px 8px}
 </style></head><body>
 <header><h1>Kart telemetry coaching</h1>
 <div class="sub">A phone in a pocket and AirPods in a helmet, turned into a debrief a driver can use.</div></header>
@@ -187,6 +258,13 @@ button:disabled{opacity:.5;cursor:default}
 <div class="card"><h3>Stage A: recording to dataset</h3><ol>__STAGE_A__</ol></div>
 <div class="card"><h3>Stage B: analysis and coaching</h3><ol>__STAGE_B__</ol></div>
 </div>
+<h2>What you get</h2>
+<div class="shots">
+<div><img src="/assets/kart-debrief.png" alt="Coaching debrief dashboard"><div class="cap">Debrief: improvement priority, sector consistency, per-turn scores and cues, next-session plan.</div></div>
+<div><img src="/assets/kart-sector-1.png" alt="Sector 1 study dashboard"><div class="cap">Sector study: braking and turn points on the GPS line, speed traces with a spread band, delta to best, where to brake next run.</div></div>
+</div>
+<h2>Raw data</h2>
+<div class="card raw">__RAW__</div>
 <h2>Sessions in the inbox</h2>
 <div class="card"><table><tr><th>Date</th><th>Time</th><th>Session</th><th>Driver</th><th>Laps</th><th>Best (sheet)</th></tr>__INBOX__</table></div>
 <button id="go">Begin analysis</button><span class="status" id="status"></span>
@@ -235,10 +313,25 @@ def render_page(venue: str) -> str:
         f"<tr><td colspan=6>{html.escape(s['file'])}</td></tr>"
         for s in inbox_sessions(venue)) or "<tr><td colspan=6>No timing sheets found in the inbox.</td></tr>"
     links = "".join(f'<a href="${{s.render}}/{slug}.html">{label}</a>' for slug, label in DASHBOARDS)
+    pv = data_preview(venue)
+    if pv:
+        raw = (f"<p>Recorded with the <a href=\"https://www.tszheichoi.com/sensorlogger\" style=\"color:var(--accent)\">Sensor Logger</a> "
+               f"app (v{html.escape(str(pv.get('app_version') or '?'))}) on an {html.escape(str(pv.get('device') or 'iPhone'))}, "
+               f"with AirPods providing head motion and audio. One export, <code>{html.escape(pv['zip'])}</code> "
+               f"({pv['size_mb']:.0f} MB), holds every channel as a CSV keyed on the same nanosecond clock. "
+               f"Sample rows from {PREVIEW_AT_S / 60:.0f} minutes in:</p>")
+        for ch in pv["channels"]:
+            head = "".join(f"<th>{html.escape(c)}</th>" for c in ch["cols"])
+            body = "".join("<tr>" + "".join(f"<td>{html.escape(v)}</td>" for v in r) + "</tr>" for r in ch["rows"])
+            raw += (f'<div class="chan"><div class="lbl">{html.escape(ch["label"])}<span>{html.escape(ch["file"])}</span></div>'
+                    f'<table><tr>{head}</tr>{body}</table></div>')
+    else:
+        raw = "<p>No recording found in the inbox.</p>"
     return (PAGE.replace("__STAGE_A__", steps(STAGE_A_STEPS))
                 .replace("__STAGE_B__", steps(STAGE_B_STEPS))
                 .replace("__INBOX__", rows)
-                .replace("__DASH_LINKS__", links))
+                .replace("__DASH_LINKS__", links)
+                .replace("__RAW__", raw))
 
 
 def make_handler(run: Run):
@@ -268,6 +361,19 @@ def make_handler(run: Run):
                 self.send_header("Content-Length", str(len(body)))
                 self.end_headers()
                 self.wfile.write(body)
+                return
+            if path.startswith("/assets/"):
+                f = ASSETS / Path(path).name
+                if f.is_file() and f.suffix in (".png", ".jpg", ".jpeg", ".webp"):
+                    body = f.read_bytes()
+                    self.send_response(200)
+                    self.send_header("Content-Type", "image/png" if f.suffix == ".png" else "image/jpeg")
+                    self.send_header("Content-Length", str(len(body)))
+                    self.send_header("Cache-Control", "public, max-age=86400")
+                    self.end_headers()
+                    self.wfile.write(body)
+                    return
+                self.send_error(404)
                 return
             if path == "/api/status":
                 q = self.path.partition("?")[2]
