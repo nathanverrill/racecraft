@@ -6,8 +6,8 @@ Exploratory work on racing telemetry, analysis and AI tooling. Two subjects:
   IMU, 1 Hz GPS) and AirPods (engine audio, head motion), turned into lap times,
   sector splits, coaching output and replay visuals. Validated against the venue's
   printed timing sheet.
-- **Formula 1.** Public telemetry via FastF1, a retrieval system over F1 history and
-  engineering literature, and a scraped corpus of race commentary.
+- **Formula 1.** Public telemetry via FastF1, a scraped corpus of race commentary,
+  and an archived retrieval prototype over F1 history.
 
 > **Status: exploratory.** Nothing here is a product or a library. Scripts and
 > notebooks are research code, kept because the ideas and results are useful. Expect
@@ -20,7 +20,7 @@ Exploratory work on racing telemetry, analysis and AI tooling. Two subjects:
 | [`telemetry/`](telemetry/) | Current karting pipeline. Sensor Logger ZIP in, per-session dataset and HTML/MP4 dashboards out. |
 | [`telemetry-v1/`](telemetry-v1/) | Earlier version of the karting pipeline, plus diagnostic probes and a Claude-vs-Gemini dashboard build comparison. |
 | [`vision/`](vision/) | Spec and recovered artifacts for reading timing sheets and track maps from photographs. Not part of the current pipeline. |
-| [`strategy-ai/`](strategy-ai/) | Hybrid BM25 + dense-vector retrieval over F1 results and engineering PDFs, using OpenSearch and Gemini. |
+| [`archive/`](archive/) | Older experiments kept for reference, not maintained. Currently `strategy-ai`, a hybrid-retrieval prototype over F1 results. |
 | [`notebooks/`](notebooks/) | Jupyter notebooks: karting at Gateway, COTA and Boschertown; FastF1 for Formula 1. |
 | [`narrative/`](narrative/) | Scrapers and a small corpus of race reports and transcripts for generating race commentary. |
 | [`docs/`](docs/) | Where the raw data lives on disk and how the repo is organised. |
@@ -101,22 +101,16 @@ is in `spec/`. What was built and kept is the image-derived venue geometry in
 reading was replaced with hand-extracted JSON so the pipeline could be validated
 end to end. `IMAGE_CORPUS.md` catalogues the photographs on disk.
 
-## strategy-ai
+## archive
 
-Retrieval over two layers of F1 knowledge: a 1950 to 2020 results database for what
-happened, and engineering literature for why. Lexical and dense retrieval are
-combined in one OpenSearch query because driver codes and lap numbers need exact
-matching while questions about aerodynamics or tyres are semantic.
+Experiments that are not maintained and do not run as checked in. Kept for the
+ideas in them.
 
-```bash
-cd strategy-ai
-docker compose up -d
-export GEMINI_API_KEY=...
-python chat.py
-```
-
-`hybrid.ipynb` builds the index. `hybrid-2.ipynb` iterates on the retrieval mix. The
-PDF corpus is on disk, not in git.
+- `strategy-ai/` Hybrid BM25 + dense-vector retrieval over the 1950 to 2020 F1
+  results database using OpenSearch and Gemini, with a RAG chat loop. The index
+  build lives in the notebooks. The standalone `chat.py` queries an embedding
+  field with the wrong model, no script creates the index or search pipeline, and
+  the dataset must be downloaded separately. See its README for details.
 
 ## notebooks
 

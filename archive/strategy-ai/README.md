@@ -1,4 +1,13 @@
-# strategy-ai
+# strategy-ai (archived)
+
+> **Archived prototype. Does not run as checked in.** Known gaps: `chat.py` embeds
+> queries with Gemini at 1024 dims but the `embedding_1024` field was indexed with
+> BGE-large, so the vector half of the search is meaningless (the notebook's own chat
+> cells use `embedding_3072`, which is consistent). Nothing creates the index mapping
+> or the `hybrid-search-pipeline` search pipeline the hybrid query needs. The Kaggle
+> dataset, `prompts.yaml` and the PNG inputs are not in the repo. There is no
+> requirements file. The engineering-PDF layer described below was never indexed.
+
 
 Hybrid retrieval over Formula 1 knowledge — the substrate for a strategy advisor that
 can answer with both the race record and the engineering behind it.
