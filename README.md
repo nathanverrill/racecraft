@@ -36,7 +36,7 @@ writes back.
 3. `sessions.py` splits one recording into separate stints. Hard gate.
 4. `sync.py` fits the audio clock to the sensor clock as a drift rate, not a constant offset. Measured drift is about 0.2 %.
 5. `fuse.py` fuses GPS and IMU into a 100 Hz trace using a smoothing spline with zero-velocity updates.
-6. `laps.py` detects laps against the venue's start/finish gate. Hard gate. Lap times match the official sheet to roughly 0.2 to 0.3 s RMSE.
+6. `laps.py` finds start/finish gate crossings in the GPS trace and anchors lap boundaries to the timing sheet's lap times. Hard gate: detected crossings must agree with the sheet-derived boundaries, and on the checked-in sessions they agree to a median of about 0.2 to 0.3 s.
 7. `write_dataset.py` writes `dataset/` (parquet trace, laps, sectors, sync and fuse metadata).
 
 **Stage B** (`ingestion/kart/run_stage_b.py`) reads `dataset/` and writes alongside it:
@@ -59,7 +59,8 @@ GPS-noise dominated. Cornering g and impact g are kept on separate channels.
 
 Venue geometry (gate, corner apexes, pit routes) lives in
 `ingestion/output/<venue>/_venue/`. Two Gateway Kartplex sessions from 2026-06-25
-are checked in as worked examples under `ingestion/output/gateway-kartplex/`.
+are checked in as worked examples under `ingestion/output/gateway-kartplex/`,
+regenerated from the raw recording with the current code (Stage A and B both pass).
 
 ### Running it
 

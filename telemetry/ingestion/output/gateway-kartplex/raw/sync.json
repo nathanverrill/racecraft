@@ -1,5 +1,6 @@
 {
   "venue": "gateway-kartplex",
+  "recording": "World_Wide_Technology_Raceway-2026-06-25_21-02-36.zip",
   "method": "growing-lag regression: local xcorr(Microphone.csv dBFS amp, audio RMS env) across recording; WLS lag=(a-1)*audio_t+b",
   "model": "sensor_t = a*audio_t + b",
   "a": 1.0021636160217,
@@ -12,5 +13,24 @@
   "n_windows_used": 35,
   "mean_window_score": 0.6865599569497682,
   "fs_env_hz": 50.0,
-  "low_confidence": false
+  "low_confidence": false,
+  "per_recording": {
+    "/Users/nathanverrill/Documents/Projects & Code/racecraft/telemetry/ingestion/raw_sessions/World_Wide_Technology_Raceway-2026-06-25_21-02-36": {
+      "venue": "gateway-kartplex",
+      "recording": "World_Wide_Technology_Raceway-2026-06-25_21-02-36.zip",
+      "method": "growing-lag regression: local xcorr(Microphone.csv dBFS amp, audio RMS env) across recording; WLS lag=(a-1)*audio_t+b",
+      "model": "sensor_t = a*audio_t + b",
+      "a": 1.0021636160217,
+      "b": -0.967248126378853,
+      "fit_R": 0.8940348991833799,
+      "drift_pct": 0.21636160216999498,
+      "audio_dur_s": 2189.44,
+      "mic_span_s": 2193.64,
+      "naive_ratio": 1.0019182987430575,
+      "n_windows_used": 35,
+      "mean_window_score": 0.6865599569497682,
+      "fs_env_hz": 50.0,
+      "low_confidence": false
+    }
+  }
 }

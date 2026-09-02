@@ -1,9 +1,11 @@
 {
-  "zip_stem": "World_Wide_Technology_Raceway-2026-06-25_21-02-36",
   "sessions": [
     {
       "session_key": "2026-06-25_14-40",
       "datetime_local": "2026-06-25T14:40:00",
+      "event": "10-minute A&D",
+      "recording": "World_Wide_Technology_Raceway-2026-06-25_21-02-36.zip",
+      "session_dir": "/Users/nathanverrill/Documents/Projects & Code/racecraft/telemetry/ingestion/raw_sessions/World_Wide_Technology_Raceway-2026-06-25_21-02-36",
       "window": {
         "se0": 58.80130908203125,
         "se1": 769.8007563476563,
@@ -13,13 +15,17 @@
       },
       "sheet_laps": 14,
       "sheet_best": 40.519,
-      "sheet_median_lap": 42.0115,
-      "expected_drive_s": 588.161,
-      "duration_plausible": true
+      "match_med_err_s": 0.235,
+      "match_start_sec": 45.6,
+      "match_sign": -1,
+      "telemetry": true
     },
     {
       "session_key": "2026-06-25_15-00",
       "datetime_local": "2026-06-25T15:00:00",
+      "event": "10 min A&D",
+      "recording": "World_Wide_Technology_Raceway-2026-06-25_21-02-36.zip",
+      "session_dir": "/Users/nathanverrill/Documents/Projects & Code/racecraft/telemetry/ingestion/raw_sessions/World_Wide_Technology_Raceway-2026-06-25_21-02-36",
       "window": {
         "se0": 1153.8006235351563,
         "se1": 1878.8023354492188,
@@ -29,9 +35,12 @@
       },
       "sheet_laps": 13,
       "sheet_best": 41.164,
-      "sheet_median_lap": 42.035,
-      "expected_drive_s": 546.4549999999999,
-      "duration_plausible": true
+      "match_med_err_s": 0.334,
+      "match_start_sec": 82.15,
+      "match_sign": -1,
+      "telemetry": true
     }
-  ]
+  ],
+  "unmatched_sheets": [],
+  "med_err_max_s": 3.0
 }

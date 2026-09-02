@@ -1,14 +1,19 @@
 {
   "source_json": "2026-06-25_1500.json",
+  "schema": "flat",
   "session_key": "2026-06-25_15-00",
   "datetime_local": "2026-06-25T15:00:00",
   "date": "2026-06-25",
   "time": "15:00",
+  "time_raw": "15:00",
   "venue": "Kartplex T1",
+  "configuration": null,
+  "session_type": "10 min A&D",
   "event": "10 min A&D",
   "driver": "Nathan Verrill",
   "kart_number": null,
   "position": 1,
+  "field_size": 55340,
   "lap_times": [
     42.137,
     49.038,
@@ -25,7 +30,17 @@
     41.632
   ],
   "best_lap": 41.164,
+  "avg_lap": 43.027,
+  "avg_lap_basis": "mean of all laps",
+  "ranking_metric": "best",
   "total_laps": 13,
+  "scheduled_laps": null,
+  "consistency": {
+    "n": 13,
+    "mean": 43.027,
+    "std": 3.042,
+    "cv": 0.0707
+  },
   "proSkill": 1222,
   "proSkillRank": 17600,
   "proSkillPercentage": 68.2,

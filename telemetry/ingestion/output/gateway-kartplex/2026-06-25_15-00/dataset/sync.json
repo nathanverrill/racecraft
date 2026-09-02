@@ -1,5 +1,6 @@
 {
   "venue": "gateway-kartplex",
+  "recording": "World_Wide_Technology_Raceway-2026-06-25_21-02-36.zip",
   "method": "growing-lag regression: local xcorr(Microphone.csv dBFS amp, audio RMS env) across recording; WLS lag=(a-1)*audio_t+b",
   "model": "sensor_t = a*audio_t + b",
   "a": 1.0021636160217,

@@ -542,7 +542,7 @@
         "name": "Sector 2 split (after T5)",
         "derived": true,
         "from_best_lap_frac": 0.45,
-        "heading_deg": 88.3,
+        "heading_deg": 78.8,
         "stroke": "#00e5ff",
         "stroke-width": 3,
         "note": "Derived: perpendicular split gate at this fraction of the validated best lap. Reusable across sessions."
@@ -551,12 +551,12 @@
         "type": "LineString",
         "coordinates": [
           [
-            -90.13445946366895,
-            38.64846409462141
+            -90.13440865518501,
+            38.64849822936559
           ],
           [
-            -90.13457456243616,
-            38.64846681505713
+            -90.13452163137126,
+            38.64851562706829
           ]
         ]
       }
@@ -569,7 +569,7 @@
         "name": "Sector 3 split (after T9)",
         "derived": true,
         "from_best_lap_frac": 0.83,
-        "heading_deg": 272.9,
+        "heading_deg": 290.4,
         "stroke": "#00e5ff",
         "stroke-width": 3,
         "note": "Derived: perpendicular split gate at this fraction of the validated best lap. Reusable across sessions."
@@ -578,12 +578,12 @@
         "type": "LineString",
         "coordinates": [
           [
-            -90.13495729536295,
-            38.6494778197323
+            -90.13470689098294,
+            38.649473796193206
           ],
           [
-            -90.13484229163048,
-            38.64948237373024
+            -90.13459893879083,
+            38.649505096111234
           ]
         ]
       }

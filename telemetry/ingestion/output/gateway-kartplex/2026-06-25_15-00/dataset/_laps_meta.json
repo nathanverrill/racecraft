@@ -1,8 +1,11 @@
 {
-  "rmse": 0.24636011782937745,
+  "med_err": 0.33446785654402333,
   "n_laps": 13,
-  "gate_off_m": -1.0,
-  "best_detected": 41.071,
+  "start_sec": 82.15438696061254,
+  "sign": -1,
+  "gate_off_m": 0.0,
   "sheet_best": 41.164,
-  "validated": true
+  "validated": true,
+  "rmse": 0.33446785654402333,
+  "best_detected": 41.164
 }

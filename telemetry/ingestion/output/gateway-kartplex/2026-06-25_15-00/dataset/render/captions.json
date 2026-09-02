@@ -1,35 +1,35 @@
 {
   "session_key": "2026-06-25_15-00",
-  "lap": 9,
+  "lap": 8,
   "lap_window_abs": [
-    433.133,
-    474.167
+    391.9,
+    433.033
   ],
   "captions": [
     {
       "t": 0.0,
-      "end": 8.62,
-      "text": "Okay Nathan, kart nineteen. Best lap 41.1. Theoretical best 39.4. Here's where the time is."
+      "end": 8.6,
+      "text": "Okay Nathan, kart nineteen. Best lap 41.2. Theoretical best 39.1. Here's where the time is."
     },
     {
-      "t": 9.07,
-      "end": 11.42,
+      "t": 9.57,
+      "end": 11.92,
       "text": "Turn 2. lock one reference and repeat it."
     },
     {
-      "t": 27.43,
-      "end": 30.31,
-      "text": "Turn 6. commit to one repeatable minimum speed."
+      "t": 29.4,
+      "end": 32.35,
+      "text": "Turn 7. commit to one repeatable minimum speed."
     },
     {
-      "t": 35.37,
-      "end": 38.86,
-      "text": "Turn 10. apex around 23, make it repeatable."
+      "t": 33.1,
+      "end": 35.81,
+      "text": "Turn 9. get to full throttle earlier on exit."
     },
     {
-      "t": 38.57,
-      "end": 43.26,
-      "text": "Focus S1. About 1.6 seconds there. Let's go again."
+      "t": 38.66,
+      "end": 43.33,
+      "text": "Focus S1. About 1.4 seconds there. Let's go again."
     }
   ]
 }
