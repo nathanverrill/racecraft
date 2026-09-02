@@ -1,4 +1,4 @@
-# strategy-ai (archived)
+# f1-hybrid-search (archived)
 
 > **Archived prototype. Does not run as checked in.** Known gaps: `chat.py` embeds
 > queries with Gemini at 1024 dims but the `embedding_1024` field was indexed with
@@ -9,8 +9,8 @@
 > requirements file. The engineering-PDF layer described below was never indexed.
 
 
-Hybrid retrieval over Formula 1 knowledge — the substrate for a strategy advisor that
-can answer with both the race record and the engineering behind it.
+Hybrid retrieval over Formula 1 results, combining BM25 and dense embeddings in
+OpenSearch, with a Gemini RAG chat loop on top.
 
 Lexical BM25 and 1024-dimension dense embeddings are combined in a single OpenSearch
 query, which matters for this corpus specifically: driver codes, lap numbers and
