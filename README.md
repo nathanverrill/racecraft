@@ -13,6 +13,50 @@ Exploratory work on racing telemetry, analysis and AI tooling. Two subjects:
 > notebooks are research code, kept because the ideas and results are useful. Expect
 > hardcoded paths, one-off diagnostics and venue-specific assumptions.
 
+## Quickstart: run the karting coaching on a real session
+
+This is the part worth trying. It takes one Sensor Logger recording from a rental
+kart session and produces a coaching debrief: where the time is, which corners are
+inconsistent, and a plan for the next session.
+
+Requirements: Python 3.11 or newer and `ffmpeg` on your PATH. The narration step uses
+the macOS `say` command and is skipped on other systems.
+
+```bash
+git clone https://github.com/nathanverrill/racecraft.git
+cd racecraft/telemetry
+python3 -m venv .venv
+.venv/bin/pip install -r ingestion/requirements.txt
+
+# 1. download the sample recording (90 MB) into ingestion/inbox/gateway-kartplex/
+.venv/bin/python fetch_sample_data.py
+
+# 2. Stage A: recording in, validated per-session dataset out (about a minute)
+.venv/bin/python ingestion/kart/run.py
+
+# 3. Stage B: analytics, coaching, ghost lap, dashboards
+.venv/bin/python ingestion/kart/run_stage_b.py
+
+# 4. print the debrief and next-session strategy
+.venv/bin/python ingestion/kart/show_coaching.py
+```
+
+Step 4 prints, per session, the headline gap to a theoretical best lap, sector
+consistency scores, a ranked list of corners to work on with a concrete cue for each,
+a lap-by-lap session plan, and the incident laps that were excluded. The same content
+is in `ingestion/output/gateway-kartplex/<session>/dataset/coaching.json`.
+
+For the interactive dashboards, serve the output directory and open a session's
+`render/coaching.html` or `render/onboard.html`:
+
+```bash
+.venv/bin/python -m http.server 8800 -d ingestion/output
+```
+
+The sample recording is two ten-minute sessions at Gateway Kartplex on 2026-06-25.
+The venue geometry and both timing sheets are already in the repo, so nothing else
+needs to be transcribed.
+
 ## Repository layout
 
 | Directory | Contents |
@@ -64,24 +108,10 @@ regenerated from the raw recording with the current code (Stage A and B both pas
 
 ### Running it
 
-```bash
-cd telemetry
-python3 -m venv .venv
-.venv/bin/pip install -r ingestion/requirements.txt
-
-# Stage A, then Stage B (default venue: gateway-kartplex)
-.venv/bin/python ingestion/kart/run.py
-.venv/bin/python ingestion/kart/run_stage_b.py
-
-# view dashboards
-.venv/bin/python -m http.server 8800 -d ingestion/output/gateway-kartplex
-# e.g. http://localhost:8800/2026-06-25_14-40/dataset/render/onboard.html
-```
-
-Stage A needs a raw recording ZIP plus its timing-sheet JSON in
-`ingestion/inbox/<venue>/`. Raw recordings are not in git; see
-[`docs/DATA.md`](docs/DATA.md). Video export additionally needs Playwright with
-Chromium and ffmpeg.
+See the quickstart above. Stage A needs a raw recording ZIP plus its timing-sheet
+JSON in `ingestion/inbox/<venue>/`. Video export additionally needs Playwright with
+Chromium. Other recordings and where they live are listed in
+[`docs/DATA.md`](docs/DATA.md).
 
 ## vision
 
