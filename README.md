@@ -3,9 +3,9 @@
 Exploratory work on racing telemetry, analysis and AI tooling. Two subjects:
 
 - **Karting.** Rental-kart sessions recorded with a phone running the Sensor Logger
-  app (100 Hz IMU, 1 Hz GPS) and AirPods (engine audio, head motion), turned into lap times,
-  sector splits, coaching output and replay visuals. Validated against the venue's
-  printed timing sheet.
+  app (100 Hz IMU, 1 Hz GPS) and AirPods (engine audio, head motion), turned into
+  lap times, sector splits, coaching output and replay visuals. Validated against
+  the venue's printed timing sheet.
 - **Formula 1.** Public telemetry via FastF1, a scraped corpus of race commentary,
   and an archived retrieval prototype over F1 history.
 
@@ -25,19 +25,20 @@ and a plan for the next session. The image ships with a sample session, so:
 docker run --rm -p 8800:8800 ghcr.io/nathanverrill/racecraft
 ```
 
-Then open <http://localhost:8800>. The home page explains what the pipeline will do
-and lists the sessions waiting in the inbox. Press **Begin analysis** and the
-pipeline output streams into the page, about a minute. When it finishes you land on
-the first session's coaching debrief. **View All Sessions** in its header returns to
-the home page, where each session is a card at the top with its headline, biggest
-opportunity and top three corners to work on, plus links into the other dashboards: onboard
-replay, ghost lap against your theoretical best, cockpit view and sector 1 breakdown.
-**Reset** deletes the generated output and returns the page to its starting state.
+Then open <http://localhost:8800>. The home page lists the sessions waiting in the
+inbox with a **Begin analysis** button. Press it and the pipeline output streams into
+the page, about a minute. When it finishes you land on the first session's coaching
+debrief. **View All Sessions** in its header returns to the home page, where each
+session is now a card at the top with its headline, biggest opportunity and top three
+corners to work on, plus links into the other dashboards: onboard replay, ghost lap
+against your theoretical best, cockpit view and sector 1 breakdown. **Reset** deletes
+the generated output and returns the page to its starting state.
+
+Below the button, the home page describes the two pipeline stages, shows the
+dashboards you will get, and previews the raw data: sample rows from each channel of
+the Sensor Logger export, read straight out of the ZIP.
 
 ![Sector 1 study](telemetry/ingestion/kart/assets/kart-sector-1.png)
-
-The home page also previews the raw data: sample rows from each channel of the
-Sensor Logger export, straight out of the ZIP.
 
 To build the image yourself instead of pulling it:
 
@@ -48,8 +49,9 @@ docker build -t racecraft .
 docker run --rm -p 8800:8800 racecraft
 ```
 
-Pass `--batch` after the image name to run the pipeline headless, print the debrief
-to the terminal and exit.
+The published image is built for amd64 and arm64, so it runs natively on Apple
+Silicon. Pass `--batch` after the image name to run the pipeline headless, print the
+debrief to the terminal and exit.
 
 ### Without Docker
 
@@ -175,5 +177,6 @@ qualifying.
 ## Data
 
 About 34 GB of raw recordings, SQLite exports, PDFs, photographs and rendered video
-back this repo and none of it is committed. [`docs/DATA.md`](docs/DATA.md) lists
-where each set lives and what is regenerable.
+back this repo. The only piece committed is the trimmed 42 MB sample recording the
+quickstart uses. [`docs/DATA.md`](docs/DATA.md) lists where the rest lives and what
+is regenerable.
