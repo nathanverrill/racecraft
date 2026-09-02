@@ -25,9 +25,12 @@ and a plan for the next session. The image ships with a sample session, so:
 docker run --rm -p 8800:8800 ghcr.io/nathanverrill/racecraft
 ```
 
-It runs the pipeline (about a minute), prints the debrief for each session, then
-serves the interactive dashboards at <http://localhost:8800>. Onboard replay,
-coaching, ghost lap against your theoretical best, and a first-person cockpit view.
+Then open <http://localhost:8800>. The home page explains what the pipeline will do
+and lists the sessions waiting in the inbox. Press **Begin analysis** and the
+pipeline output streams into the page, about a minute. When it finishes, each session
+appears as a card with its headline, biggest opportunity and top three corners to work
+on, with links into the dashboards: onboard replay, coaching debrief, ghost lap against
+your theoretical best, cockpit view and sector 1 breakdown.
 
 To build the image yourself instead of pulling it:
 
@@ -38,13 +41,8 @@ docker build -t racecraft .
 docker run --rm -p 8800:8800 racecraft
 ```
 
-Pass `--no-serve` after the image name to run the pipeline and print the debrief
-without starting the server.
-
-The printed debrief covers, per session, the gap to a theoretical best lap, sector
-consistency scores, a ranked list of corners to work on with a concrete cue for each,
-a lap-by-lap session plan, and the incident laps that were excluded. The same content
-is in `ingestion/output/gateway-kartplex/<session>/dataset/coaching.json`.
+Pass `--batch` after the image name to run the pipeline headless, print the debrief
+to the terminal and exit.
 
 ### Without Docker
 
@@ -58,7 +56,7 @@ python3 -m venv .venv
 .venv/bin/python ingestion/kart/run.py            # Stage A: recording -> dataset
 .venv/bin/python ingestion/kart/run_stage_b.py    # Stage B: analytics, coaching, dashboards
 .venv/bin/python ingestion/kart/show_coaching.py  # print the debrief
-.venv/bin/python -m http.server 8800 -d ingestion/output
+.venv/bin/python ingestion/kart/webapp.py         # or drive it all from the browser
 ```
 
 The sample recording is in the repo at `ingestion/inbox/gateway-kartplex/`: one

@@ -1,18 +1,15 @@
 #!/bin/sh
+# Default: serve the web front end (home page with a "Begin analysis" button).
+# --batch: run the pipeline headless, print the debrief, and exit.
 set -e
 cd /app/ingestion
 VENUE="${VENUE:-gateway-kartplex}"
 
-echo "=== Stage A: recording -> validated dataset ($VENUE) ==="
-python kart/run.py "$VENUE"
-echo
-echo "=== Stage B: analytics, coaching, dashboards ==="
-python kart/run_stage_b.py "$VENUE"
-echo
-echo "=== Coaching debrief ==="
-python kart/show_coaching.py "$VENUE"
+if [ "$1" = "--batch" ] || [ "$1" = "--no-serve" ]; then
+  python kart/run.py "$VENUE"
+  python kart/run_stage_b.py "$VENUE"
+  python kart/show_coaching.py "$VENUE"
+  exit 0
+fi
 
-if [ "$1" = "--no-serve" ]; then exit 0; fi
-echo
-echo "Dashboards: http://localhost:8800/  (Ctrl-C to stop)"
-exec python -m http.server 8800 --bind 0.0.0.0 -d /app/ingestion/output
+exec python kart/webapp.py --venue "$VENUE" --port 8800
