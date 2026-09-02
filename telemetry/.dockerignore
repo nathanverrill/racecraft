@@ -1,0 +1,7 @@
+.venv
+**/__pycache__
+ingestion/raw_sessions
+ingestion/output/*/20*/
+ingestion/output/index.html
+**/*.mp4
+!ingestion/inbox/**/*.zip

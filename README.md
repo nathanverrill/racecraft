@@ -13,40 +13,51 @@ Exploratory work on racing telemetry, analysis and AI tooling. Two subjects:
 > notebooks are research code, kept because the ideas and results are useful. Expect
 > hardcoded paths, one-off diagnostics and venue-specific assumptions.
 
-## Quickstart: run the karting coaching on a real session
+## Quickstart: see the coaching analysis with one command
 
-This is the part worth trying. It takes one Sensor Logger recording from a rental
-kart session and produces a coaching debrief: where the time is, which corners are
-inconsistent, and a plan for the next session.
+<!-- screenshot: docs/screenshot.png -->
 
-Requirements: Python 3.11 or newer and `ffmpeg` on your PATH. The narration step uses
-the macOS `say` command and is skipped on other systems.
+The karting pipeline takes one Sensor Logger recording from a rental-kart session
+and produces a coaching debrief: where the time is, which corners are inconsistent,
+and a plan for the next session. The image ships with a sample session, so:
+
+```bash
+docker run --rm -p 8800:8800 ghcr.io/nathanverrill/racecraft
+```
+
+It runs the pipeline (about a minute), prints the debrief for each session, then
+serves the interactive dashboards at <http://localhost:8800>. Onboard replay,
+coaching, ghost lap against your theoretical best, and a first-person cockpit view.
+
+To build the image yourself instead of pulling it:
 
 ```bash
 git clone https://github.com/nathanverrill/racecraft.git
 cd racecraft/telemetry
-python3 -m venv .venv
-.venv/bin/pip install -r ingestion/requirements.txt
-
-# 1. Stage A: recording in, validated per-session dataset out (about a minute)
-.venv/bin/python ingestion/kart/run.py
-
-# 2. Stage B: analytics, coaching, ghost lap, dashboards
-.venv/bin/python ingestion/kart/run_stage_b.py
-
-# 3. print the debrief and next-session strategy
-.venv/bin/python ingestion/kart/show_coaching.py
+docker build -t racecraft .
+docker run --rm -p 8800:8800 racecraft
 ```
 
-Step 3 prints, per session, the headline gap to a theoretical best lap, sector
+Pass `--no-serve` after the image name to run the pipeline and print the debrief
+without starting the server.
+
+The printed debrief covers, per session, the gap to a theoretical best lap, sector
 consistency scores, a ranked list of corners to work on with a concrete cue for each,
 a lap-by-lap session plan, and the incident laps that were excluded. The same content
 is in `ingestion/output/gateway-kartplex/<session>/dataset/coaching.json`.
 
-For the interactive dashboards, serve the output directory and open a session's
-`render/coaching.html` or `render/onboard.html`:
+### Without Docker
+
+Python 3.11 or newer and `ffmpeg` on your PATH. Narration uses the macOS `say`
+command and is skipped elsewhere.
 
 ```bash
+cd racecraft/telemetry
+python3 -m venv .venv
+.venv/bin/pip install -r ingestion/requirements.txt
+.venv/bin/python ingestion/kart/run.py            # Stage A: recording -> dataset
+.venv/bin/python ingestion/kart/run_stage_b.py    # Stage B: analytics, coaching, dashboards
+.venv/bin/python ingestion/kart/show_coaching.py  # print the debrief
 .venv/bin/python -m http.server 8800 -d ingestion/output
 ```
 
@@ -59,7 +70,7 @@ and both timing sheets are alongside it, so nothing needs downloading or transcr
 
 | Directory | Contents |
 |---|---|
-| [`telemetry/`](telemetry/) | Current karting pipeline. Sensor Logger ZIP in, per-session dataset and HTML/MP4 dashboards out. |
+| [`telemetry/`](telemetry/) | Current karting pipeline and its Dockerfile. Sensor Logger ZIP in, per-session dataset and HTML/MP4 dashboards out. |
 | [`vision/`](vision/) | Spec and recovered artifacts for reading timing sheets and track maps from photographs. Not part of the current pipeline. |
 | [`archive/`](archive/) | Older experiments kept for reference, not maintained. `karting-telemetry-v1`, the superseded pipeline, and `f1-hybrid-search`, a retrieval prototype over F1 results. |
 | [`notebooks/`](notebooks/) | Jupyter notebooks: karting at Gateway, COTA and Boschertown; FastF1 for Formula 1. |
