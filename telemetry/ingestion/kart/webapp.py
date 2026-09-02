@@ -15,6 +15,7 @@ import csv
 import html
 import io
 import json
+import shutil
 import subprocess
 import sys
 import threading
@@ -26,6 +27,7 @@ HERE = Path(__file__).resolve().parent          # ingestion/kart
 ING = HERE.parent                                # ingestion
 INBOX = ING / "inbox"
 OUTPUT = ING / "output"
+RAW_SESSIONS = ING / "raw_sessions"
 ASSETS = HERE / "assets"
 
 # Channels previewed on the home page: file -> (label, columns to show)
@@ -164,6 +166,25 @@ class Run:
             with self.lock:
                 self.state = "failed"
 
+    def reset(self) -> bool:
+        """Delete everything the pipeline generated for this venue. Keeps the inbox
+        and the venue geometry (_venue/) so the next run starts from scratch."""
+        with self.lock:
+            if self.state == "running":
+                return False
+            self.state = "idle"
+            self.lines = []
+        vdir = OUTPUT / self.venue
+        if vdir.exists():
+            for child in vdir.iterdir():
+                if child.name == "_venue":
+                    continue
+                shutil.rmtree(child) if child.is_dir() else child.unlink()
+        (OUTPUT / "index.html").unlink(missing_ok=True)
+        if RAW_SESSIONS.exists():
+            shutil.rmtree(RAW_SESSIONS)
+        return True
+
     def snapshot(self, offset: int) -> dict:
         with self.lock:
             return {"state": self.state, "offset": len(self.lines),
@@ -232,6 +253,8 @@ ol{margin:0;padding-left:20px}li{margin:4px 0}li b{color:var(--txt)}
 table{border-collapse:collapse;width:100%}td,th{padding:6px 10px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}th{color:var(--dim);font-weight:500}
 button{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:14px 26px;font-size:16px;font-weight:650;cursor:pointer;margin-top:18px}
 button:disabled{opacity:.5;cursor:default}
+button.reset{background:transparent;border:1px solid var(--line);color:var(--dim);margin-left:10px;display:none}
+button.reset:hover{border-color:var(--bad);color:var(--txt)}
 #log{display:none;background:#05070a;border:1px solid var(--line);border-radius:12px;padding:14px;font:12.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;max-height:420px;overflow:auto;white-space:pre-wrap;margin-top:18px}
 #log .h{color:var(--accent);font-weight:700}#log .ok{color:var(--good)}#log .bad{color:var(--bad)}
 .status{display:inline-block;margin-left:14px;color:var(--dim);font-size:14px}
@@ -267,12 +290,12 @@ button:disabled{opacity:.5;cursor:default}
 <div class="card raw">__RAW__</div>
 <h2>Sessions in the inbox</h2>
 <div class="card"><table><tr><th>Date</th><th>Time</th><th>Session</th><th>Driver</th><th>Laps</th><th>Best (sheet)</th></tr>__INBOX__</table></div>
-<button id="go">Begin analysis</button><span class="status" id="status"></span>
+<button id="go">Begin analysis</button><button id="reset" class="reset" title="Delete the generated dataset and dashboards so you can run from scratch">Reset</button><span class="status" id="status"></span>
 <div id="log"></div>
 <div id="results"></div>
 </main>
 <script>
-const go=document.getElementById('go'),log=document.getElementById('log'),
+const go=document.getElementById('go'),reset=document.getElementById('reset'),log=document.getElementById('log'),
       status=document.getElementById('status'),results=document.getElementById('results');
 let offset=0,timer=null;
 function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
@@ -291,12 +314,15 @@ function renderSessions(list){if(!list.length){results.innerHTML='';return}
   results.innerHTML=h+'</div>'}
 async function poll(){const r=await fetch('/api/status?offset='+offset);const j=await r.json();
   append(j.lines);offset=j.offset;
-  if(j.state==='running'){status.textContent='Running…';go.disabled=true}
+  if(j.state==='running'){status.textContent='Running…';go.disabled=true;reset.style.display='none'}
   else{clearInterval(timer);timer=null;go.disabled=false;
     status.textContent=j.state==='done'?'Complete':(j.state==='failed'?'Failed, see log':'');
     go.textContent=j.sessions.length?'Run analysis again':'Begin analysis';
+    reset.style.display=j.sessions.length?'inline-block':'none';
     renderSessions(j.sessions);
     if(j.state==='done')results.scrollIntoView({behavior:'smooth'})}}
+reset.onclick=async()=>{reset.disabled=true;const r=await fetch('/api/reset',{method:'POST'});const j=await r.json();
+  if(j.reset){location.href='/'}else{reset.disabled=false;status.textContent='Cannot reset while running'}};
 go.onclick=async()=>{go.disabled=true;log.style.display='block';log.innerHTML='';offset=0;results.innerHTML='';
   await fetch('/api/run',{method:'POST'});timer=setInterval(poll,700);poll()};
 poll();
@@ -394,6 +420,9 @@ def make_handler(run: Run):
             if self.path == "/api/run":
                 started = run.start()
                 self._json({"started": started, "state": run.state})
+                return
+            if self.path == "/api/reset":
+                self._json({"reset": run.reset(), "state": run.state})
                 return
             self.send_error(404)
 
